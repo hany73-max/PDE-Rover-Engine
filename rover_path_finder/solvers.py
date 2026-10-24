@@ -1,30 +1,46 @@
 """
 Iterative solvers for Laplace's equation (∇²φ = 0).
 
-STUDENT STARTER TEMPLATE
-========================
+STUDENT STARTER TEMPLATE & MINI-COURSE
+=====================================
 Welcome to the PDE Rover Engine solver template!
-Your task is to implement the numerical solvers below using NumPy.
-Do NOT use SciPy, iterative solver packages, or ML libraries — everything
-must be built from first principles using discrete finite difference stencils.
+For the full theoretical derivations, physics, and proofs, see `TEAM_GUIDE.md`.
 
-Mathematical Background:
-------------------------
-Laplace's equation in 2D Cartesian coordinates:
-    ∇²φ = ∂²φ/∂x² + ∂²φ/∂y² = 0
+The Big Picture (Why are we using PDEs?):
+----------------------------------------
+In planetary robotics, traditional path planners (Artificial Potential Fields)
+get trapped in local minima (craters, dead-end canyons).
+We solve this using a fundamental elliptic PDE: Laplace's equation (∇²φ = 0).
+By the Strong Maximum Principle, harmonic functions CANNOT have local minima
+in the interior of the domain. Extrema only exist on the boundaries!
+Therefore, gradient descent (-∇φ) is mathematically guaranteed to guide the
+rover from the Start (source φ=1) to the Goal (sink φ=0) without ever stalling.
 
-Discretized using a uniform grid (Δx = Δy = h) with standard second-order central
-finite differences:
-    (φ[i+1, j] - 2φ[i, j] + φ[i-1, j]) / h² + (φ[i, j+1] - 2φ[i, j] + φ[i, j-1]) / h² = 0
-Multiplying by h² and solving for φ[i, j] yields the 5-point discrete mean-value property:
-    φ[i, j] = 1/4 * (φ[i+1, j] + φ[i-1, j] + φ[i, j+1] + φ[i, j-1])
+How the Math Turns into Code:
+-----------------------------
+1. Continuous PDE: ∇²φ = ∂²φ/∂x² + ∂²φ/∂y² = 0
+2. Discretization: Using second-order central differences from Taylor expansions
+   with grid spacing h:
+       (φ[i+1, j] - 2φ[i, j] + φ[i-1, j]) / h² + (φ[i, j+1] - 2φ[i, j] + φ[i, j-1]) / h² = 0
+   Multiplying by h² and rearranging yields the 5-point discrete mean-value property:
+       φ[i, j] = 1/4 * (φ[i+1, j] + φ[i-1, j] + φ[i, j+1] + φ[i, j-1])
+3. Massive Linear System: A 100×100 grid forms 10,000 coupled linear equations (A·φ = b).
+   Direct Gaussian elimination is O(M³) (trillions of operations!).
+   Instead, we use iterative relaxation solvers:
+     - Jacobi: Simultaneous relaxation (slow baseline, O(N²) iterations).
+     - Gauss-Seidel: Immediate update (cuts sweeps in half).
+     - SOR: Extrapolated over-relaxation using Young's theorem (O(N) iterations, 66× speedup).
+4. Boundary Physics (Where we want to end up):
+     - Start (source) φ = 1.0, Goal (sink) φ = 0.0 (Dirichlet).
+     - Obstacle walls: Zero-flux Neumann walls (∂φ/∂n = 0) derived via ghost cells,
+       acting like insulated riverbanks so streamlines flow cleanly around craters.
 
 Functions to Implement:
 -----------------------
-1. omega_opt    : Compute the optimal SOR over-relaxation parameter for an N×N grid.
-2. jacobi       : Standard Jacobi relaxation (simultaneous update).
-3. sor          : Red-Black Successive Over-Relaxation (Gauss-Seidel when omega=1.0).
-4. sor_neumann  : Red-Black SOR with zero-flux Neumann boundary conditions (∂φ/∂n = 0)
+1. omega_opt    : Formula for optimal SOR over-relaxation parameter for an N×N grid.
+2. jacobi       : Level 1 — Standard Jacobi relaxation (simultaneous update).
+3. sor          : Level 1 — Red-Black Successive Over-Relaxation (Gauss-Seidel when omega=1.0).
+4. sor_neumann  : Level 2 — Red-Black SOR with zero-flux Neumann boundary conditions (∂φ/∂n = 0)
                   on hazard/obstacle boundaries.
 """
 
