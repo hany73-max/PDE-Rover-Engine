@@ -1,0 +1,22 @@
+# Python-generated files
+__pycache__/
+*.py[oc]
+build/
+dist/
+wheels/
+*.egg-info
+
+# Virtual environments
+.venv/
+env/
+venv/
+
+# Generated run logs and scratch files
+*.log
+*.tmp
+
+# Generated test and run outputs (keep the folder tracked via .gitkeep)
+outputs/*
+!outputs/.gitkeep
+
+# Note: data/ is tracked so team members have the Mars DEM files out of the box
