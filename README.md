@@ -44,28 +44,35 @@ In traditional video-game or robotics navigation (APF), a rover is like a marble
 
 ## 🎓 Student Starter Kit & Team Workflow
 
-If you are a student working on this project:
-1. Read the **[TEAM_GUIDE.md](TEAM_GUIDE.md)** for a complete step-by-step walkthrough, physical intuition, and math cheatsheet.
-2. Edit **only** `rover_path_finder/solvers.py` to implement the 4 PDE solver routines.
-3. Test your solvers interactively using `uv run python test_solvers.py`.
-4. Run the full simulation and generate report figures with `uv run python main.py`.
+This repository bridges **college PDE coursework (analytical methods)** with **planetary robotics (computational physics)**:
+
+1. **Step 1 (Pencil & Paper Lab):** Complete [STUDENT_WORKSHEET.md](STUDENT_WORKSHEET.md) to master hand-calculations on the 4-node discrete Laplacian, Lagrange streamline ODEs, and operator auxiliary roots.
+2. **Step 2 (Coursework Tutor):** Run python -m course_math.tutor to review step-by-step derivations for any textbook exercise in Chapters 1 & 2.
+3. **Step 3 (The Mars Scale-Up):** Run python test_solvers.py and python main.py to see your paper math scale up to 25,600 nodes on real NASA Mars HiRISE terrain!
 
 ---
 
 ## Project Structure
 
-```
+`
 Rover-Path-Finder/
 │
-├── TEAM_GUIDE.md               ← 📘 Start here! Detailed team guide & PDE roadmap
-├── test_solvers.py             ← 🧪 Fast unit test bench (uv run python test_solvers.py)
+├── TEAM_GUIDE.md               ← 📘 Complete course guide & syllabus roadmap
+├── STUDENT_WORKSHEET.md        ← 📝 Pencil-and-paper lab worksheet for teammates
+├── test_solvers.py             ← 🧪 Fast unit test bench for iterative solvers
 ├── main.py                     ← 🚀 Full benchmark & report figure generator
 ├── plan_on_heightmap.py        ← CLI: plan a route on any height map (.img/.tif/.png/…)
 ├── run_all.ps1                 ← reproduces all real-DEM runs end-to-end
 │
-├── rover_path_finder/          ← Python package (all the real math lives here)
-│   ├── __init__.py
-│   ├── solvers.py              ← ✏️ STUDENT TEMPLATE: Jacobi, Gauss-Seidel, SOR, Neumann-SOR
+├── course_math/                ← 📚 Semester analytical PDE solver package
+│   ├── elimination.py          ← Sec 1.2: PDE derivation by eliminating constants
+│   ├── first_order.py          ← Sec 1.3: Lagrange, Forms 1-4, Charpit's method
+│   ├── higher_order.py         ← Sec 1.4: Auxiliary equation (C.F.) & P.I. short methods
+│   ├── non_homogeneous.py     ← Sec 2.1: Reducible & irreducible operator factoring
+│   └── tutor.py                ← Interactive CLI tutor for students
+│
+├── rover_path_finder/          ← 🛰️ Planetary rover simulation package
+│   ├── solvers.py              ← Discrete Jacobi, Gauss-Seidel, SOR & Neumann solvers
 │   ├── terrain.py              ← terrain generation, DEM loading, PDS3 reader, dilation
 │   ├── planners.py             ← potential builders, steepest descent, Dijkstra
 │   └── visualization.py       ← all Matplotlib figures

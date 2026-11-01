@@ -1,12 +1,15 @@
-# 🎓 PDE Rover Engine: A Mini-Course in Applied PDEs & Planetary Robotics
+# 🎓 PDE Rover Engine: A Comprehensive Course in Applied PDEs & Planetary Robotics
 
 Welcome to your college **Partial Differential Equations (PDE)** team project!
 
-This guide is designed as an interactive **mini-course**. It takes you from the pure mathematical theory of elliptic PDEs all the way to autonomous rover navigation on real NASA HiRISE elevation models of Mars.
+This guide is designed as an interactive **two-part university course**:
+1. **Part I: The Semester Coursework Theory (Analytical & Exact Methods):** Master the exact pencil-and-paper techniques taught in your lecture notes (Eliminating Constants, Lagrange's Method, Charpit's Method, and Differential Operator Calculus $D_x, D_y$).
+2. **Part II: The Planetary Rover Application (Computational Scale-Up):** Understand why analytical formulas cannot easily handle complex geometry (like 10,000 jagged Mars crater walls), and how the exact same PDE is discretized and scaled up using Python to guide an autonomous planetary rover on real NASA elevation models.
 
-> 💡 **Where to code:** You only need to write code in **one single file**:  
-> [`rover_path_finder/solvers.py`](rover_path_finder/solvers.py)  
-> All other components (terrain loaders, path descend planners, Dijkstra benchmarks, and visualization engines) are already implemented and waiting for your solvers!
+> 📚 **Your Coursework Toolkit:**
+> - 📝 **Student Lab Worksheet:** [`STUDENT_WORKSHEET.md`](STUDENT_WORKSHEET.md) — Pencil-and-paper problems for your team to solve.
+> - 💻 **Interactive Course Tutor:** Run `.venv\Scripts\python.exe -m course_math.tutor` to check step-by-step solutions for any textbook example.
+> - 🚀 **Rover Simulation Engine:** Run `.venv\Scripts\python.exe main.py` to see the complete planetary navigation benchmark.
 
 ---
 
@@ -14,12 +17,53 @@ This guide is designed as an interactive **mini-course**. It takes you from the 
 
 ```mermaid
 flowchart TD
-    M1["<b>Module 1: The Real-World Problem</b><br/>Why traditional robotics fails in craters (The Local Minima Trap)"] --> M2["<b>Module 2: The PDE Solution</b><br/>Laplace's Equation & The Strong Maximum Principle"]
-    M2 --> M3["<b>Module 3: Discretization Math</b><br/>Taylor Series Expansion → 5-Point Laplacian Stencil"]
+    M0["<b>Module 0: The Semester Theory (The Book)</b><br/>Analytical Methods: Lagrange, Charpit, Operator Calculus D_x, D_y"] --> M1["<b>Module 1: The Real-World Engineering Problem</b><br/>Why traditional robotics fails in craters (The Local Minima Trap)"]
+    M1 --> M2["<b>Module 2: The Governing PDE (Laplace)</b><br/>(D_x² + D_y²)φ = 0 & The Strong Maximum Principle"]
+    M2 --> M3["<b>Module 3: Discretization Math</b><br/>Taylor Series Expansion → 5-Point Discrete Mean Value Stencil"]
     M3 --> M4["<b>Module 4: Iterative Solvers Race</b><br/>Jacobi vs. Gauss-Seidel vs. SOR (Young's Theorem)"]
     M4 --> M5["<b>Module 5: Boundary Physics</b><br/>Dirichlet (Source/Sink) vs. Neumann Ghost Cells (No-Flux Walls)"]
     M5 --> M6["<b>Module 6: The Final Destination</b><br/>Steepest Gradient Descent Navigation on Mars DEMs"]
 ```
+
+---
+
+## 📖 Module 0: The Semester Coursework Theory (Analytical Methods)
+
+Before turning to computers, every engineer must understand the **analytical methods** used to solve PDEs on paper.
+
+### 1. Eliminating Arbitrary Constants (Section 1.2)
+Given a geometric family of surfaces $F(x, y, z, a, b) = 0$, we eliminate the arbitrary parameters $a$ and $b$ by computing:
+$$p = \frac{\partial z}{\partial x}, \quad q = \frac{\partial z}{\partial y}$$
+* **Example (Page 8-9):** $z = ax + by + a^2 + b^2 \implies z = xp + yq + p^2 + q^2$.
+
+### 2. First-Order Quasi-Linear PDEs: Lagrange's Method (Section 1.3.1)
+Any first-order equation linear in partial derivatives $P p + Q q = R$ is solved by finding two independent integrals $u(x, y, z) = c_1$ and $v(x, y, z) = c_2$ from the **auxiliary equations**:
+$$\frac{dx}{P} = \frac{dy}{Q} = \frac{dz}{R}$$
+* **The Rover Connection:** In rover navigation, the streamline trajectories of motion along velocity field $(u, v)$ follow $\frac{dx}{u} = \frac{dy}{v}$.
+
+### 3. Special Non-Linear Forms & Charpit's Method (Section 1.3.2–1.3.6)
+* **Form 1 ($f(p, q) = 0$):** $p = a, q = b \implies z = ax + by + c$.  
+  *Crucial Example:* The Eikonal travel-time equation in robotics $|\nabla \phi|^2 = p^2 + q^2 = 1$ is standard Form 1!
+* **Clairaut's Form ($z = px + qy + f(p, q)$):** Complete integral $z = ax + by + f(a, b)$.
+* **Charpit's Method:** Universal auxiliary ODE system for solving any non-linear 1st-order PDE.
+
+### 4. Higher-Order Homogeneous Linear PDEs (Section 1.4)
+For differential operator $F(D_x, D_y)z = 0$, put $D_x = m, D_y = 1$ to form the **Auxiliary Equation (A.E.)** $F(m, 1) = 0$:
+* **Laplace's Equation (Page 33, Example 5):**
+  $$(D_x^2 + D_y^2)z = 0 \implies m^2 + 1 = 0 \implies m = \pm i$$
+  General Solution: $z = \phi_1(y + ix) + \phi_2(y - ix)$.
+* **Particular Integrals (P.I.):** Short methods for exponential forcing ($e^{ax+by}$), sinusoidal forcing ($\sin(ax+by)$), and polynomial forcing ($x^a y^b$).
+
+---
+
+## 🌉 The Educational Bridge: Why Paper Math Needs Computer Math
+
+Ask your team this fundamental question:
+> *"If we already have the exact analytical solution $z = \phi_1(y + ix) + \phi_2(y - ix)$ for Laplace's equation, why can't we just use that formula for Mars?"*
+
+* **The Answer:** On a smooth geometric domain (like an infinite flat plane or a perfect circular disc), paper math works beautifully.
+* **The Catch:** A real Mars crater terrain has **over 10,000 irregular boundary pixels**. It is mathematically impossible to write down a closed-form formula for $\phi_1$ and $\phi_2$ that fits 10,000 jagged crater boundaries.
+* **The Engineering Solution:** We convert the continuous operator $(D_x^2 + D_y^2)$ into a **discrete 5-point stencil** and let Python compute the values across the entire grid!
 
 ---
 
@@ -200,40 +244,43 @@ When you run the project, your team will see:
 
 ---
 
-## 🛠️ Module 7: Hands-On Laboratory Guide (How to Code & Test)
+## 🛠️ Module 7: Hands-On Laboratory Guide (How to Learn & Execute)
 
-### Setup
-```bash
-# 1. Install dependencies
-uv sync
+### Step 1: Complete the Pencil-and-Paper Worksheet
+Open [`STUDENT_WORKSHEET.md`](STUDENT_WORKSHEET.md). With your teammates, solve the hand-calculation problems:
+* Problem 1: Deriving PDEs by elimination of constants (Section 1.2).
+* Problem 2: Analytical solution of $(D_x^2 + D_y^2)z = 0$ using characteristic roots $m = \pm i$ (Section 1.4).
+* Problem 3: Hand-calculate 1 sweep of the 5-point discrete Laplacian on a small $4 \times 4$ grid.
+* Problem 4: Solve the rover streamline ODE using Lagrange's method (Section 1.3.1).
+
+### Step 2: Use the Coursework Interactive Tutor
+Verify any analytical problem from your semester notes with the step-by-step solver:
+```powershell
+.venv\Scripts\python.exe -m course_math.tutor
+```
+Options available:
+* `[1]` Section 1.2: Elimination of Constants
+* `[2]` Section 1.3: First-Order Methods (Lagrange, Forms 1-4, Charpit)
+* `[3]` Section 1.4: Higher-Order Operators (C.F. & P.I. short methods)
+* `[4]` Chapter 2: Non-Homogeneous Operators (Reducible / Irreducible)
+* `[5]` The Rover Bridge Lesson
+
+### Step 3: Verify the Production Rover Solvers
+Run the fast unit test bench to verify that the discrete solvers are working properly:
+```powershell
+.venv\Scripts\python.exe test_solvers.py
 ```
 
-### Where to Code
-Open [`rover_path_finder/solvers.py`](rover_path_finder/solvers.py). Implement the 4 functions in order:
-
-1. **`omega_opt(N)`**: Calculate the optimal relaxation factor formula.
-2. **`jacobi(phi, fixed, tol, maxit)`**: Simultaneous 4-neighbor averaging.
-3. **`sor(phi, fixed, omega, tol, maxit)`**: Red-Black checkerboard SOR.
-4. **`sor_neumann(phi, fixed, free, omega, tol, maxit)`**: No-flux Neumann walls on obstacles.
-
-### Testing in 0.1 Seconds
-Use the dedicated fast test bench as you build:
-```bash
-# Test Phase 1 (omega_opt, jacobi, sor):
-uv run python test_solvers.py --phase 1
-
-# Test Phase 2 (sor_neumann):
-uv run python test_solvers.py --phase 2
-
-# Test all functions:
-uv run python test_solvers.py
+### Step 4: Full Simulation & Planetary Navigation
+Launch the full planetary rover benchmark suite:
+```powershell
+.venv\Scripts\python.exe main.py
 ```
-
-### Full Simulation & Report Generator
-Once all unit tests pass, run the full pipeline:
-```bash
-uv run python main.py
-```
+This runs the solver across lunar terrain and generates the 4 key report figures in `outputs/`:
+* `outputs/fig1_terrain.png`: Synthetic lunar craters and hazardous slope thresholding.
+* `outputs/fig2_solution_and_path.png`: The harmonic potential field and steepest descent path.
+* `outputs/fig3_validation_and_solvers.png`: Solver convergence race (Jacobi vs SOR).
+* `outputs/fig4_trap_comparison.png`: Dead-end canyon trap comparison (APF vs Laplace).
 This generates all figures in `outputs/` and reproduces the full project benchmarks!
 
 ---
