@@ -16,9 +16,34 @@ os.makedirs("labs", exist_ok=True)
 
 
 class NotebookBuilder:
-    def __init__(self, filename: str):
+    def __init__(self, filename: str, target_dir: str = "labs"):
         self.filename = filename
+        self.target_dir = target_dir
         self.cells = []
+
+    def colab_badge(self):
+        url = f"https://colab.research.google.com/github/hany73-max/PDE-Rover-Engine/blob/main/labs/{self.filename}"
+        badge = f"[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)]({url})"
+        self.md(badge)
+
+    def colab_setup(self):
+        source = (
+            "# 🚀 GOOGLE COLAB SETUP\n"
+            "# If you are running this notebook on Google Colab, execute this cell to clone the repo and set paths:\n"
+            "import os, sys\n"
+            "try:\n"
+            "    if 'google.colab' in str(get_ipython()):\n"
+            "        if not os.path.exists('PDE-Rover-Engine'):\n"
+            "            import subprocess\n"
+            "            subprocess.run(['git', 'clone', 'https://github.com/hany73-max/PDE-Rover-Engine.git'], check=True)\n"
+            "        os.chdir('PDE-Rover-Engine')\n"
+            "        if '.' not in sys.path:\n"
+            "            sys.path.insert(0, '.')\n"
+            "        print('[OK] Google Colab setup complete! Connected to PDE-Rover-Engine repository.')\n"
+            "except NameError:\n"
+            "    pass"
+        )
+        self.code(source)
 
     def md(self, source: str):
         self.cells.append({
@@ -37,6 +62,7 @@ class NotebookBuilder:
         })
 
     def save(self):
+        os.makedirs(self.target_dir, exist_ok=True)
         nb_json = {
             "cells": self.cells,
             "metadata": {
@@ -45,7 +71,7 @@ class NotebookBuilder:
             "nbformat": 4,
             "nbformat_minor": 5
         }
-        path = os.path.join("labs", self.filename)
+        path = os.path.join(self.target_dir, self.filename)
         with open(path, "w", encoding="utf-8") as f:
             json.dump(nb_json, f, indent=2)
         print(f"Generated {path} with {len(self.cells)} cells.")
@@ -54,8 +80,10 @@ class NotebookBuilder:
 # ===========================================================================
 # LAB 1: ELIMINATION OF ARBITRARY CONSTANTS
 # ===========================================================================
-def build_lab_1():
-    nb = NotebookBuilder("Lab_1_Elimination_of_Constants.ipynb")
+def build_lab_1(solutions: bool = False, target_dir: str = 'labs'):
+    nb = NotebookBuilder("Lab_1_Elimination_of_Constants.ipynb", target_dir=target_dir)
+    nb.colab_badge()
+    nb.colab_setup()
     
     nb.md(r"""# 📡 Lab 1: Derivation of PDEs by Elimination of Constants
 ### *Mission Control: The Terrain Scanner*
@@ -129,9 +157,20 @@ $$z = (x - a)^2 + (y - b)^2$$
 Enter your resulting PDE string (e.g. `"p^2 + q^2 = 4z"`) in the cell below:
 """)
 
-    nb.code(r"""# GRADED CELL: Paper Challenge 1
+    if solutions:
+        nb.code(r"""# GRADED CELL: Paper Challenge 1
 ### START CODE HERE ###
 student_pde_1 = "p^2 + q^2 = 4z"
+### END CODE HERE ###
+
+# Run verification test:
+test_lab1.check_paper_challenge_1(student_pde_1)
+""")
+    else:
+        nb.code(r"""# GRADED CELL: Paper Challenge 1
+### START CODE HERE ### (≈ 1 line of code)
+# Enter your resulting PDE string from your paper calculations (e.g. "p^2 + q^2 = 4z")
+student_pde_1 = None
 ### END CODE HERE ###
 
 # Run verification test:
@@ -154,9 +193,20 @@ $$z = \frac{1}{2} a x^2 + \frac{1}{2} b y^2$$
 What is the resulting PDE? Enter it below:
 """)
 
-    nb.code(r"""# GRADED CELL: Rover Bridge Challenge
+    if solutions:
+        nb.code(r"""# GRADED CELL: Rover Bridge Challenge
 ### START CODE HERE ###
 rover_basin_pde = "x*p + y*q = 2z"
+### END CODE HERE ###
+
+# Run verification test:
+test_lab1.check_paper_challenge_2(rover_basin_pde)
+""")
+    else:
+        nb.code(r"""# GRADED CELL: Rover Bridge Challenge
+### START CODE HERE ### (≈ 1 line of code)
+# Enter your resulting PDE string from your paper calculations (e.g. "x*p + y*q = 2z")
+rover_basin_pde = None
 ### END CODE HERE ###
 
 # Run verification test:
@@ -170,11 +220,25 @@ Now let's write the flight software routine that checks whether a numerical heig
 $$\text{residual} = (p^2 + q^2) - 4z \approx 0$$
 """)
 
-    nb.code(r'''# GRADED FUNCTION: verify_crater_pde
+    if solutions:
+        nb.code(r'''# GRADED FUNCTION: verify_crater_pde
 def verify_crater_pde(Z: np.ndarray, P: np.ndarray, Q: np.ndarray) -> np.ndarray:
     # Computes the PDE residual: (p^2 + q^2) - 4*z
     ### START CODE HERE ###
     residual = (P**2 + Q**2) - 4.0 * Z
+    ### END CODE HERE ###
+    return residual
+
+# Run automated test:
+test_lab1.test_eliminate_constants_fn(verify_crater_pde)
+''')
+    else:
+        nb.code(r'''# GRADED FUNCTION: verify_crater_pde
+def verify_crater_pde(Z: np.ndarray, P: np.ndarray, Q: np.ndarray) -> np.ndarray:
+    # Computes the PDE residual: (p^2 + q^2) - 4*z
+    ### START CODE HERE ### (≈ 1 line of code)
+    # Compute residual: (P**2 + Q**2) - 4.0 * Z
+    residual = None
     ### END CODE HERE ###
     return residual
 
@@ -222,8 +286,10 @@ print("Lab 1 Complete! You have mastered the derivation of PDEs by elimination o
 # ===========================================================================
 # LAB 2: LAGRANGE'S METHOD OF CHARACTERISTICS
 # ===========================================================================
-def build_lab_2():
-    nb = NotebookBuilder("Lab_2_Lagrange_Method.ipynb")
+def build_lab_2(solutions: bool = False, target_dir: str = 'labs'):
+    nb = NotebookBuilder("Lab_2_Lagrange_Method.ipynb", target_dir=target_dir)
+    nb.colab_badge()
+    nb.colab_setup()
     
     nb.md(r"""# 🛞 Lab 2: Quasi-Linear PDEs & Lagrange's Method
 ### *Mission Control: The Hands-Free Steering Wheel*
@@ -293,10 +359,22 @@ $$x p + y q = z$$
 Enter your derived formulas for $u$ and $v$ (e.g. `"x/y"` and `"y/z"`) below:
 """)
 
-    nb.code(r"""# GRADED CELL: Paper Challenge 1
+    if solutions:
+        nb.code(r"""# GRADED CELL: Paper Challenge 1
 ### START CODE HERE ###
 student_u = "x/y"
 student_v = "y/z"
+### END CODE HERE ###
+
+# Run verification test:
+test_lab2.check_paper_challenge_1(student_u, student_v)
+""")
+    else:
+        nb.code(r"""# GRADED CELL: Paper Challenge 1
+### START CODE HERE ### (≈ 2 lines of code)
+# Enter the two invariants u and v from your paper integration
+student_u = None  # e.g. "x/y"
+student_v = None  # e.g. "y/z"
 ### END CODE HERE ###
 
 # Run verification test:
@@ -321,9 +399,20 @@ $$-2x \frac{\partial \phi}{\partial x} - 4y \frac{\partial \phi}{\partial y} = 0
 What curve does the rover follow? Enter the formula below:
 """)
 
-    nb.code(r"""# GRADED CELL: Rover Streamline Challenge
+    if solutions:
+        nb.code(r"""# GRADED CELL: Rover Streamline Challenge
 ### START CODE HERE ###
 rover_streamline = "y = k*x^2"
+### END CODE HERE ###
+
+# Run verification test:
+test_lab2.check_paper_challenge_2(rover_streamline)
+""")
+    else:
+        nb.code(r"""# GRADED CELL: Rover Streamline Challenge
+### START CODE HERE ### (≈ 1 line of code)
+# Enter the streamline trajectory equation (e.g. "y = k*x^2")
+rover_streamline = None
 ### END CODE HERE ###
 
 # Run verification test:
@@ -336,7 +425,8 @@ test_lab2.check_paper_challenge_2(rover_streamline)
 Let's code an autonomous streamline tracer using the 4th-order Runge-Kutta (RK4) ODE method to follow $(P, Q)$ vectors!
 """)
 
-    nb.code(r'''# GRADED FUNCTION: trace_streamline_rk4
+    if solutions:
+        nb.code(r'''# GRADED FUNCTION: trace_streamline_rk4
 def trace_streamline_rk4(velocity_fn, start=(1.0, 2.0), dt=0.01, steps=50):
     # Numerically traces a characteristic curve (streamline) of a quasi-linear system
     trajectory = [start]
@@ -351,6 +441,27 @@ def trace_streamline_rk4(velocity_fn, start=(1.0, 2.0), dt=0.01, steps=50):
         # Normalize step or apply Euler/RK step
         curr = curr + dt * v
         trajectory.append(tuple(curr))
+    ### END CODE HERE ###
+    
+    return np.array(trajectory)
+
+# Run automated unit test:
+test_lab2.test_rk4_streamline_tracer(trace_streamline_rk4)
+''')
+    else:
+        nb.code(r'''# GRADED FUNCTION: trace_streamline_rk4
+def trace_streamline_rk4(velocity_fn, start=(1.0, 2.0), dt=0.01, steps=50):
+    # Numerically traces a characteristic curve (streamline) of a quasi-linear system
+    trajectory = [start]
+    curr = np.array(start, dtype=float)
+    
+    ### START CODE HERE ### (≈ 4-5 lines of code)
+    # Loop over steps:
+    # 1. vx, vy = velocity_fn(curr[0], curr[1])
+    # 2. v = np.array([vx, vy], dtype=float)
+    # 3. curr = curr + dt * v
+    # 4. trajectory.append(tuple(curr))
+    pass
     ### END CODE HERE ###
     
     return np.array(trajectory)
@@ -400,8 +511,10 @@ print("Lab 2 Complete! You have mastered Lagrange's Method of Characteristics.")
 # ===========================================================================
 # LAB 3: NON-LINEAR PDES & CHARPIT'S METHOD
 # ===========================================================================
-def build_lab_3():
-    nb = NotebookBuilder("Lab_3_Nonlinear_Charpit.ipynb")
+def build_lab_3(solutions: bool = False, target_dir: str = 'labs'):
+    nb = NotebookBuilder("Lab_3_Nonlinear_Charpit.ipynb", target_dir=target_dir)
+    nb.colab_badge()
+    nb.colab_setup()
     
     nb.md(r"""# 📻 Lab 3: Non-Linear First-Order PDEs & Charpit's Method
 ### *Mission Control: The Radar Beacon Ping*
@@ -463,9 +576,20 @@ $$z = p x + q y + p q$$
 Enter the complete integral formula below:
 """)
 
-    nb.code(r"""# GRADED CELL: Paper Challenge 1
+    if solutions:
+        nb.code(r"""# GRADED CELL: Paper Challenge 1
 ### START CODE HERE ###
 student_clairaut = "z = ax + by + ab"
+### END CODE HERE ###
+
+# Run verification test:
+test_lab3.check_paper_challenge_1(student_clairaut)
+""")
+    else:
+        nb.code(r"""# GRADED CELL: Paper Challenge 1
+### START CODE HERE ### (≈ 1 line of code)
+# Enter your complete integral formula (e.g. "z = ax + by + ab")
+student_clairaut = None
 ### END CODE HERE ###
 
 # Run verification test:
@@ -487,9 +611,20 @@ $$p^2 + q^2 = 1$$
 Enter the resulting circular envelope equation below:
 """)
 
-    nb.code(r"""# GRADED CELL: Rover Wavefront Challenge
+    if solutions:
+        nb.code(r"""# GRADED CELL: Rover Wavefront Challenge
 ### START CODE HERE ###
 student_envelope = "x^2 + y^2 = z^2"
+### END CODE HERE ###
+
+# Run verification test:
+test_lab3.check_paper_challenge_2(student_envelope)
+""")
+    else:
+        nb.code(r"""# GRADED CELL: Rover Wavefront Challenge
+### START CODE HERE ### (≈ 1 line of code)
+# Enter the expanding circular ripple envelope equation (e.g. "x^2 + y^2 = z^2")
+student_envelope = None
 ### END CODE HERE ###
 
 # Run verification test:
@@ -502,7 +637,8 @@ test_lab3.check_paper_challenge_2(student_envelope)
 Let's code a wavefront travel-time distance function satisfying $|\nabla T| = 1$:
 """)
 
-    nb.code(r'''# GRADED FUNCTION: compute_eikonal_wavefront
+    if solutions:
+        nb.code(r'''# GRADED FUNCTION: compute_eikonal_wavefront
 def compute_eikonal_wavefront(grid_size=(50, 50), source=(25, 25)):
     # Computes the expanding circular arrival time T(x, y) from a beacon source
     Ny, Nx = grid_size
@@ -511,6 +647,23 @@ def compute_eikonal_wavefront(grid_size=(50, 50), source=(25, 25)):
     ### START CODE HERE ###
     # Euclidean distance satisfies (dT/dx)^2 + (dT/dy)^2 = 1
     dist = np.hypot(X - source[1], Y - source[0])
+    ### END CODE HERE ###
+    
+    return dist
+
+# Run automated unit test:
+test_lab3.test_eikonal_wavefront_distance(compute_eikonal_wavefront)
+''')
+    else:
+        nb.code(r'''# GRADED FUNCTION: compute_eikonal_wavefront
+def compute_eikonal_wavefront(grid_size=(50, 50), source=(25, 25)):
+    # Computes the expanding circular arrival time T(x, y) from a beacon source
+    Ny, Nx = grid_size
+    Y, X = np.ogrid[:Ny, :Nx]
+    
+    ### START CODE HERE ### (≈ 1 line of code)
+    # Compute Euclidean distance from grid coordinates (X, Y) to source using np.hypot
+    dist = None
     ### END CODE HERE ###
     
     return dist
@@ -547,8 +700,10 @@ print("Lab 3 Complete! You have mastered Non-Linear First-Order PDEs and Charpit
 # ===========================================================================
 # LAB 4: HIGHER-ORDER OPERATORS & LAPLACE'S EQUATION
 # ===========================================================================
-def build_lab_4():
-    nb = NotebookBuilder("Lab_4_HigherOrder_Operators.ipynb")
+def build_lab_4(solutions: bool = False, target_dir: str = 'labs'):
+    nb = NotebookBuilder("Lab_4_HigherOrder_Operators.ipynb", target_dir=target_dir)
+    nb.colab_badge()
+    nb.colab_setup()
     
     nb.md(r"""# 🛡️ Lab 4: Higher-Order Operators & Laplace's Equation
 ### *Mission Control: The Anti-Trap Shield*
@@ -616,10 +771,22 @@ $$(D_x^2 + D_y^2)z = 0$$
 Enter the roots in Python (`1j` for $i$, `-1j` for $-i$):
 """)
 
-    nb.code(r"""# GRADED CELL: Paper Challenge 1
+    if solutions:
+        nb.code(r"""# GRADED CELL: Paper Challenge 1
 ### START CODE HERE ###
 m1 = 1j
 m2 = -1j
+### END CODE HERE ###
+
+# Run verification test:
+test_lab4.check_paper_challenge_1(m1, m2)
+""")
+    else:
+        nb.code(r"""# GRADED CELL: Paper Challenge 1
+### START CODE HERE ### (≈ 2 lines of code)
+# Enter roots in Python (use 1j for i, -1j for -i)
+m1 = None
+m2 = None
 ### END CODE HERE ###
 
 # Run verification test:
@@ -640,9 +807,20 @@ $$(D_x^2 - D_x D_y - 6 D_y^2)z = \sin(2x - 3y)$$
 Enter your derived P.I. formula below:
 """)
 
-    nb.code(r"""# GRADED CELL: Rover Gravity Forcing Challenge
+    if solutions:
+        nb.code(r"""# GRADED CELL: Rover Gravity Forcing Challenge
 ### START CODE HERE ###
 student_pi = "(1/44)*sin(2x - 3y)"
+### END CODE HERE ###
+
+# Run verification test:
+test_lab4.check_paper_challenge_2(student_pi)
+""")
+    else:
+        nb.code(r"""# GRADED CELL: Rover Gravity Forcing Challenge
+### START CODE HERE ### (≈ 1 line of code)
+# Enter your derived Particular Integral formula (e.g. "(1/44)*sin(2x - 3y)")
+student_pi = None
 ### END CODE HERE ###
 
 # Run verification test:
@@ -655,11 +833,25 @@ test_lab4.check_paper_challenge_2(student_pi)
 Let's code a polynomial solver for higher-order differential operators:
 """)
 
-    nb.code(r'''# GRADED FUNCTION: solve_operator_roots
+    if solutions:
+        nb.code(r'''# GRADED FUNCTION: solve_operator_roots
 def solve_operator_roots(coeffs: list[float]) -> list[complex]:
     # Finds the characteristic roots of the auxiliary equation F(m, 1) = 0
     ### START CODE HERE ###
     roots = np.roots(coeffs)
+    ### END CODE HERE ###
+    return list(roots)
+
+# Run automated unit test:
+test_lab4.test_characteristic_roots_solver(solve_operator_roots)
+''')
+    else:
+        nb.code(r'''# GRADED FUNCTION: solve_operator_roots
+def solve_operator_roots(coeffs: list[float]) -> list[complex]:
+    # Finds the characteristic roots of the auxiliary equation F(m, 1) = 0
+    ### START CODE HERE ### (≈ 1 line of code)
+    # Solve roots with np.roots(coeffs)
+    roots = None
     ### END CODE HERE ###
     return list(roots)
 
@@ -700,8 +892,10 @@ print("Lab 4 Complete! You have mastered Higher-Order Operators and Laplace's Eq
 # ===========================================================================
 # LAB 5: NON-HOMOGENEOUS LINEAR PDES & REDUCIBLE OPERATORS
 # ===========================================================================
-def build_lab_5():
-    nb = NotebookBuilder("Lab_5_NonHomogeneous_PDEs.ipynb")
+def build_lab_5(solutions: bool = False, target_dir: str = 'labs'):
+    nb = NotebookBuilder("Lab_5_NonHomogeneous_PDEs.ipynb", target_dir=target_dir)
+    nb.colab_badge()
+    nb.colab_setup()
     
     nb.md(r"""# 🔋 Lab 5: Non-Homogeneous Linear PDEs: Reducible Operators
 ### *Mission Control: Battery Drain & Sand Friction*
@@ -764,9 +958,20 @@ $$(2 D_x - 3 D_y + 1)(D_x + 2 D_y - 2)z = 0$$
 Enter the general solution formula below:
 """)
 
-    nb.code(r"""# GRADED CELL: Paper Challenge 1
+    if solutions:
+        nb.code(r"""# GRADED CELL: Paper Challenge 1
 ### START CODE HERE ###
 student_solution = "exp(-x/2)*Phi1(2y + 3x) + exp(2x)*Phi2(y - 2x)"
+### END CODE HERE ###
+
+# Run verification test:
+test_lab5.check_paper_challenge_1(student_solution)
+""")
+    else:
+        nb.code(r"""# GRADED CELL: Paper Challenge 1
+### START CODE HERE ### (≈ 1 line of code)
+# Enter your general solution string (e.g. "exp(-x/2)*Phi1(2y + 3x) + exp(2x)*Phi2(y - 2x)")
+student_solution = None
 ### END CODE HERE ###
 
 # Run verification test:
@@ -786,9 +991,20 @@ $$(D_x + 2 D_y + 1)z = 0$$
 What is the numerical damping rate $k$? Enter it below:
 """)
 
-    nb.code(r"""# GRADED CELL: Battery Dissipation Rate
+    if solutions:
+        nb.code(r"""# GRADED CELL: Battery Dissipation Rate
 ### START CODE HERE ###
 damping_rate = -1.0
+### END CODE HERE ###
+
+# Run verification test:
+test_lab5.check_paper_challenge_2(damping_rate)
+""")
+    else:
+        nb.code(r"""# GRADED CELL: Battery Dissipation Rate
+### START CODE HERE ### (≈ 1 line of code)
+# Enter numerical damping rate k in exp(k*x) (e.g. -1.0)
+damping_rate = None
 ### END CODE HERE ###
 
 # Run verification test:
@@ -801,7 +1017,8 @@ test_lab5.check_paper_challenge_2(damping_rate)
 Let's code a helper that extracts $(a, b, c)$ from a linear factor string `"a*D_x + b*D_y + c"`:
 """)
 
-    nb.code(r'''# GRADED FUNCTION: parse_linear_factor
+    if solutions:
+        nb.code(r'''# GRADED FUNCTION: parse_linear_factor
 def parse_linear_factor(factor_str: str) -> tuple[float, float, float]:
     # Parses coefficients a, b, c from a linear factor
     # Example: "2*D_x - 3*D_y - 5"
@@ -820,6 +1037,21 @@ def parse_linear_factor(factor_str: str) -> tuple[float, float, float]:
     a = to_float(ma.group(1), 1.0) if ma else 0.0
     b = to_float(mb.group(1), 1.0) if mb else 0.0
     c = float(mc.group(1)) if mc else 0.0
+    ### END CODE HERE ###
+    return a, b, c
+
+# Run automated unit test:
+test_lab5.test_linear_factor_evaluator(parse_linear_factor)
+''')
+    else:
+        nb.code(r'''# GRADED FUNCTION: parse_linear_factor
+def parse_linear_factor(factor_str: str) -> tuple[float, float, float]:
+    # Parses coefficients a, b, c from a linear factor (e.g. "2*D_x - 3*D_y - 5")
+    ### START CODE HERE ### (≈ 6-10 lines of code)
+    # Extract coefficients a, b, c using regular expressions or string parsing
+    a = None
+    b = None
+    c = None
     ### END CODE HERE ###
     return a, b, c
 
@@ -857,8 +1089,10 @@ print("Lab 5 Complete! You have mastered Non-Homogeneous PDEs and Reducible Oper
 # ===========================================================================
 # LAB 6: THE CAPSTONE: DISCRETIZATION & AUTONOMOUS ROVER NAVIGATION
 # ===========================================================================
-def build_lab_6():
-    nb = NotebookBuilder("Lab_6_Mars_Rover_Capstone.ipynb")
+def build_lab_6(solutions: bool = False, target_dir: str = 'labs'):
+    nb = NotebookBuilder("Lab_6_Mars_Rover_Capstone.ipynb", target_dir=target_dir)
+    nb.colab_badge()
+    nb.colab_setup()
     
     nb.md(r"""# 🚀 Lab 6: The Capstone: Discretization & Autonomous Mars Navigation
 ### *Mission Control: The Flight Computer Upload*
@@ -922,10 +1156,22 @@ $$\phi_A^{(1)} = \frac{1.0 + 0.0 + 0.5 + 0.0}{4} = ?$$
 Enter your hand-calculated decimals below:
 """)
 
-    nb.code(r"""# GRADED CELL: 4-Node Hand Calculation
+    if solutions:
+        nb.code(r"""# GRADED CELL: 4-Node Hand Calculation
 ### START CODE HERE ###
 phi_A = 0.375
 phi_B = 0.375
+### END CODE HERE ###
+
+# Run verification test:
+test_lab6.check_paper_challenge_1(phi_A, phi_B)
+""")
+    else:
+        nb.code(r"""# GRADED CELL: 4-Node Hand Calculation
+### START CODE HERE ### (≈ 2 lines of code)
+# Enter your hand-calculated decimals from the 4-node grid
+phi_A = None
+phi_B = None
 ### END CODE HERE ###
 
 # Run verification test:
@@ -941,9 +1187,20 @@ $$\omega_{\text{opt}} = \frac{2}{1 + \sin\left(\frac{\pi}{N}\right)}$$
 Compute $\omega_{\text{opt}}$ for $N = 16$ on your paper and enter it below:
 """)
 
-    nb.code(r"""# GRADED CELL: Optimal Omega for N=16
+    if solutions:
+        nb.code(r"""# GRADED CELL: Optimal Omega for N=16
 ### START CODE HERE ###
 omega_16 = 2.0 / (1.0 + np.sin(np.pi / 16))
+### END CODE HERE ###
+
+# Run verification test:
+test_lab6.check_paper_challenge_2(omega_16)
+""")
+    else:
+        nb.code(r"""# GRADED CELL: Optimal Omega for N=16
+### START CODE HERE ### (≈ 1 line of code)
+# Enter optimal relaxation factor omega_opt for N=16
+omega_16 = None
 ### END CODE HERE ###
 
 # Run verification test:
@@ -956,7 +1213,8 @@ test_lab6.check_paper_challenge_2(omega_16)
 Let's implement the full Red-Black Successive Over-Relaxation (SOR) solver with zero-flux Neumann walls ($\frac{\partial\phi}{\partial n} = 0$) on crater obstacles!
 """)
 
-    nb.code(r'''# GRADED FUNCTION: sor_neumann_step
+    if solutions:
+        nb.code(r'''# GRADED FUNCTION: sor_neumann_step
 def sor_neumann_step(phi, fixed, free, omega=1.5, tol=1e-5, maxit=5000):
     # Red-Black SOR solver with zero-flux Neumann crater walls
     phi = phi.copy()
@@ -988,6 +1246,40 @@ def sor_neumann_step(phi, fixed, free, omega=1.5, tol=1e-5, maxit=5000):
         hist.append(d)
         if d < tol:
             break
+    ### END CODE HERE ###
+    
+    return phi, hist
+
+# Run automated unit test:
+test_lab6.test_sor_neumann_step(sor_neumann_step)
+''')
+    else:
+        nb.code(r'''# GRADED FUNCTION: sor_neumann_step
+def sor_neumann_step(phi, fixed, free, omega=1.5, tol=1e-5, maxit=5000):
+    # Red-Black SOR solver with zero-flux Neumann crater walls
+    phi = phi.copy()
+    n, m = phi.shape
+    f = free.astype(float)
+    
+    cnt = sum(np.roll(f, s, a) for a in (0, 1) for s in (1, -1))
+    cnt = np.maximum(cnt, 1.0)
+    
+    yy, xx = np.mgrid[0:n, 0:m]
+    parity = (xx + yy) % 2
+    masks = [(parity == c) & free & ~fixed for c in (0, 1)]
+    phi[~free] = 0.0
+    hist = []
+    
+    ### START CODE HERE ### (≈ 8-12 lines of code)
+    # Loop over maxit sweeps:
+    # 1. d = 0.0
+    # 2. for mk in masks:
+    #        compute 5-point avg: avg = (np.roll(pf, 1, 0) + np.roll(pf, -1, 0) + np.roll(pf, 1, 1) + np.roll(pf, -1, 1)) / cnt
+    #        update phi[mk] = (1 - omega)*old + omega*avg[mk]
+    #        measure max change d
+    # 3. hist.append(d)
+    # 4. if d < tol: break
+    pass
     ### END CODE HERE ###
     
     return phi, hist
@@ -1092,11 +1384,34 @@ You have mastered the complete journey:
 
 
 if __name__ == "__main__":
-    print("Building all 6 DeepLearning.AI-grade course labs...")
-    build_lab_1()
-    build_lab_2()
-    build_lab_3()
-    build_lab_4()
-    build_lab_5()
-    build_lab_6()
-    print("\nAll 6 labs successfully generated!")
+    import sys
+    gen_solutions = "--solutions" in sys.argv
+    
+    if gen_solutions:
+        print("Building INSTRUCTOR REFERENCE SOLUTION labs in 'solutions/labs/'...")
+        build_lab_1(solutions=True, target_dir="solutions/labs")
+        build_lab_2(solutions=True, target_dir="solutions/labs")
+        build_lab_3(solutions=True, target_dir="solutions/labs")
+        build_lab_4(solutions=True, target_dir="solutions/labs")
+        build_lab_5(solutions=True, target_dir="solutions/labs")
+        build_lab_6(solutions=True, target_dir="solutions/labs")
+        print("[OK] All 6 solution labs successfully generated in 'solutions/labs/'!")
+    else:
+        print("Building STUDENT labs (clean placeholders + Colab badges) in 'labs/'...")
+        build_lab_1(solutions=False, target_dir="labs")
+        build_lab_2(solutions=False, target_dir="labs")
+        build_lab_3(solutions=False, target_dir="labs")
+        build_lab_4(solutions=False, target_dir="labs")
+        build_lab_5(solutions=False, target_dir="labs")
+        build_lab_6(solutions=False, target_dir="labs")
+        print("[OK] All 6 student labs successfully generated in 'labs/'!")
+        
+        # Also generate reference solutions into solutions/labs
+        print("\nGenerating companion solutions in 'solutions/labs/'...")
+        build_lab_1(solutions=True, target_dir="solutions/labs")
+        build_lab_2(solutions=True, target_dir="solutions/labs")
+        build_lab_3(solutions=True, target_dir="solutions/labs")
+        build_lab_4(solutions=True, target_dir="solutions/labs")
+        build_lab_5(solutions=True, target_dir="solutions/labs")
+        build_lab_6(solutions=True, target_dir="solutions/labs")
+        print("[OK] All 6 reference solutions successfully generated in 'solutions/labs/'!")

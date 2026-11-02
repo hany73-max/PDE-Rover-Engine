@@ -46,14 +46,14 @@ In traditional video-game or robotics navigation (APF), a rover is like a marble
 
 This repository features a 6-part interactive, guided Jupyter Notebook lab series formatted in the signature style of **DeepLearning.AI / Stanford CME (Andrew Ng)**:
 
-| Lab | Topic | Paper & Pencil Exercise | Rover Engineering Application |
-|---|---|---|---|
-| **[Lab 1](labs/Lab_1_Elimination_of_Constants.ipynb)** | Elimination of Arbitrary Constants | $z = ax + by + \sqrt{a^2+b^2}$ | Rover Sensor Calibration & Wavefront Invariant |
-| **[Lab 2](labs/Lab_2_Lagrange_Method.ipynb)** | 1st-Order Linear PDEs (Lagrange) | $x^2 p + y^2 q = z^2$ | Rover Solar Wind Drift Field & Characteristic Streamlines |
-| **[Lab 3](labs/Lab_3_Nonlinear_Charpit.ipynb)** | 1st-Order Non-Linear PDEs (Charpit) | $p^2 + q^2 = 4z$ | Eikonal Optical Sensor Wavefront & Slopes |
-| **[Lab 4](labs/Lab_4_HigherOrder_Operators.ipynb)** | Higher-Order Homogeneous Linear PDEs | $(D^2 - 4D'^2)z = 0$ | Rover Heat Shield Thermal Gradient $(D - 2D')(D + 2D')z = 0$ |
-| **[Lab 5](labs/Lab_5_NonHomogeneous_PDEs.ipynb)** | Non-Homogeneous Linear PDEs | $(D - D' - 1)(D + 2D' - 2)z = 0$ | Dual-Source Rover Radio Communication Beacon Field |
-| **[Lab 6](labs/Lab_6_Mars_Rover_Capstone.ipynb)** | **Grand Capstone: Mars Rover Navigation** | 5-Point Laplacian Stencil Derivation | 25,600-Node HiRISE Mars Terrain Path Planning |
+| Lab | Topic | One-Click Cloud | Local File | Rover Engineering Application |
+|---|---|:---:|:---:|---|
+| **Lab 1** | Elimination of Constants | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/hany73-max/PDE-Rover-Engine/blob/main/labs/Lab_1_Elimination_of_Constants.ipynb) | [`Lab_1.ipynb`](labs/Lab_1_Elimination_of_Constants.ipynb) | Rover Sensor Calibration & Wavefront Invariant |
+| **Lab 2** | 1st-Order Linear PDEs (Lagrange) | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/hany73-max/PDE-Rover-Engine/blob/main/labs/Lab_2_Lagrange_Method.ipynb) | [`Lab_2.ipynb`](labs/Lab_2_Lagrange_Method.ipynb) | Rover Solar Wind Drift Field & Characteristic Streamlines |
+| **Lab 3** | 1st-Order Non-Linear PDEs (Charpit) | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/hany73-max/PDE-Rover-Engine/blob/main/labs/Lab_3_Nonlinear_Charpit.ipynb) | [`Lab_3.ipynb`](labs/Lab_3_Nonlinear_Charpit.ipynb) | Eikonal Optical Sensor Wavefront & Slopes |
+| **Lab 4** | Higher-Order Homogeneous Linear PDEs | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/hany73-max/PDE-Rover-Engine/blob/main/labs/Lab_4_HigherOrder_Operators.ipynb) | [`Lab_4.ipynb`](labs/Lab_4_HigherOrder_Operators.ipynb) | Rover Heat Shield Thermal Gradient $(D - 2D')(D + 2D')z = 0$ |
+| **Lab 5** | Non-Homogeneous Linear PDEs | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/hany73-max/PDE-Rover-Engine/blob/main/labs/Lab_5_NonHomogeneous_PDEs.ipynb) | [`Lab_5.ipynb`](labs/Lab_5_NonHomogeneous_PDEs.ipynb) | Dual-Source Rover Radio Communication Beacon Field |
+| **Lab 6** | **Grand Capstone: Mars Rover Navigation** | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/hany73-max/PDE-Rover-Engine/blob/main/labs/Lab_6_Mars_Rover_Capstone.ipynb) | [`Lab_6.ipynb`](labs/Lab_6_Mars_Rover_Capstone.ipynb) | 25,600-Node HiRISE Mars Terrain Path Planning |
 
 👉 **Stuck on paper math?** Check out the complete step-by-step master derivation guide: **[INSTRUCTOR_ANSWER_KEY.md](INSTRUCTOR_ANSWER_KEY.md)**!
 
@@ -99,8 +99,9 @@ Rover-Path-Finder/
 │   ├── planners.py             ← potential builders, steepest descent, Dijkstra
 │   └── visualization.py       ← all Matplotlib figures
 │
-├── solutions/                  ← Reference implementation backup
-│   └── solvers_reference.py    ← Reference solution key
+├── solutions/                  ← 🔑 Reference implementation backup
+│   ├── labs/                   ← Pre-solved instructor reference notebooks
+│   └── solvers_reference.py    ← Reference discrete solver backup
 │
 ├── data/                       ← Real Mars HiRISE DEM data files (.IMG)
 │   ├── kasei.IMG               ← HiRISE DTM, Kasei Valles, 2 m/px (~78 MB)
