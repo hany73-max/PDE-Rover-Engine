@@ -1,5 +1,7 @@
 # Rover Path Finder
 
+> 🌍 **دليل الاستخدام الكامل باللغة العربية:** تجدون الشرح المفصل للمشروع واللابات الستة وطريقة التشغيل باللغة العربية مع الحفاظ التام على المصطلحات الرياضية هنا: **[TEAM_GUIDE_AR.md](TEAM_GUIDE_AR.md)** | ورقة الأسئلة الورقية: **[STUDENT_WORKSHEET_AR.md](STUDENT_WORKSHEET_AR.md)**
+
 > Safe planetary rover path planning using **Laplace's equation** — implemented from scratch with NumPy only. No SciPy, no graph libraries, no ML.
 
 *College PDE project — tested on synthetic lunar terrain and compatible with real Mars DEMs.*
@@ -84,7 +86,9 @@ Rover-Path-Finder/
 │
 ├── INSTRUCTOR_ANSWER_KEY.md    ← 🔑 Complete step-by-step master solutions for all paper problems
 ├── TEAM_GUIDE.md               ← 📘 Complete course guide & syllabus roadmap
+├── TEAM_GUIDE_AR.md            ← 🌍 Complete course & project guide in Arabic (باللغة العربية)
 ├── STUDENT_WORKSHEET.md        ← 📝 Companion pencil-and-paper lab worksheet
+├── STUDENT_WORKSHEET_AR.md     ← 📝 Companion worksheet in Arabic (ورقة التمارين بالعربية)
 ├── test_solvers.py             ← 🧪 Fast unit test bench for iterative solvers
 ├── main.py                     ← 🚀 Full benchmark & report figure generator
 ├── plan_on_heightmap.py        ← CLI: plan a route on any height map (.img/.tif/.png/…)
