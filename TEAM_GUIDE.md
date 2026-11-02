@@ -7,8 +7,9 @@ This guide is designed as an interactive **two-part university course**:
 2. **Part II: The Planetary Rover Application (Computational Scale-Up):** Understand why analytical formulas cannot easily handle complex geometry (like 10,000 jagged Mars crater walls), and how the exact same PDE is discretized and scaled up using Python to guide an autonomous planetary rover on real NASA elevation models.
 
 > 📚 **Your Coursework Toolkit:**
-> - 📝 **Student Lab Worksheet:** [`STUDENT_WORKSHEET.md`](STUDENT_WORKSHEET.md) — Pencil-and-paper problems for your team to solve.
-> - 💻 **Interactive Course Tutor:** Run `.venv\Scripts\python.exe -m course_math.tutor` to check step-by-step solutions for any textbook example.
+> - 🌟 **DeepLearning.AI 6-Lab Suite:** [`labs/`](labs/) — Interactive Andrew Ng-style notebooks with graded tests and visualizations.
+> - 🔑 **Instructor Answer Key:** [`INSTRUCTOR_ANSWER_KEY.md`](INSTRUCTOR_ANSWER_KEY.md) — Complete step-by-step master derivations and solutions.
+> - 📝 **Student Lab Worksheet:** [`STUDENT_WORKSHEET.md`](STUDENT_WORKSHEET.md) — 6-problem pencil-and-paper companion worksheet for your team.
 > - 🚀 **Rover Simulation Engine:** Run `.venv\Scripts\python.exe main.py` to see the complete planetary navigation benchmark.
 
 ---
@@ -246,24 +247,21 @@ When you run the project, your team will see:
 
 ## 🛠️ Module 7: Hands-On Laboratory Guide (How to Learn & Execute)
 
-### Step 1: Complete the Pencil-and-Paper Worksheet
-Open [`STUDENT_WORKSHEET.md`](STUDENT_WORKSHEET.md). With your teammates, solve the hand-calculation problems:
-* Problem 1: Deriving PDEs by elimination of constants (Section 1.2).
-* Problem 2: Analytical solution of $(D_x^2 + D_y^2)z = 0$ using characteristic roots $m = \pm i$ (Section 1.4).
-* Problem 3: Hand-calculate 1 sweep of the 5-point discrete Laplacian on a small $4 \times 4$ grid.
-* Problem 4: Solve the rover streamline ODE using Lagrange's method (Section 1.3.1).
+### Step 1: Work Through the 6 Interactive DeepLearning.AI Labs
+Launch the modular laboratory series in [`labs/`](labs/):
+* **[Lab 1: Elimination of Constants](labs/Lab_1_Elimination_of_Constants.ipynb)** — Sensor wavefront calibration.
+* **[Lab 2: Lagrange's Method](labs/Lab_2_Lagrange_Method.ipynb)** — Characteristic curves and solar wind drift.
+* **[Lab 3: Non-Linear Charpit](labs/Lab_3_Nonlinear_Charpit.ipynb)** — Eikonal optical sensor wavefront propagation.
+* **[Lab 4: Higher-Order Operators](labs/Lab_4_HigherOrder_Operators.ipynb)** — Thermal gradient and Laplace characteristic roots.
+* **[Lab 5: Non-Homogeneous PDEs](labs/Lab_5_NonHomogeneous_PDEs.ipynb)** — Reducible operators and exponential signal attenuation.
+* **[Lab 6: Mars Rover Capstone](labs/Lab_6_Mars_Rover_Capstone.ipynb)** — 25,600-node planetary navigation on real HiRISE DEMs.
 
-### Step 2: Use the Coursework Interactive Tutor
-Verify any analytical problem from your semester notes with the step-by-step solver:
-```powershell
-.venv\Scripts\python.exe -m course_math.tutor
-```
-Options available:
-* `[1]` Section 1.2: Elimination of Constants
-* `[2]` Section 1.3: First-Order Methods (Lagrange, Forms 1-4, Charpit)
-* `[3]` Section 1.4: Higher-Order Operators (C.F. & P.I. short methods)
-* `[4]` Chapter 2: Non-Homogeneous Operators (Reducible / Irreducible)
-* `[5]` The Rover Bridge Lesson
+*(Use [`STUDENT_WORKSHEET.md`](STUDENT_WORKSHEET.md) for your team's pencil-and-paper scratch calculations, and [`INSTRUCTOR_ANSWER_KEY.md`](INSTRUCTOR_ANSWER_KEY.md) for complete master derivations!)*
+
+### Step 2: Consult the Master Instructor Answer Key
+If you or your teammates ever get stuck on the analytical derivations in any of the 6 labs:
+* Open [`INSTRUCTOR_ANSWER_KEY.md`](INSTRUCTOR_ANSWER_KEY.md) to inspect the complete step-by-step mathematical working.
+* Every challenge (Textbook problems and Rover Bridge problems) has its full algebraic expansion and physical reasoning detailed.
 
 ### Step 3: Verify the Production Rover Solvers
 Run the fast unit test bench to verify that the discrete solvers are working properly:

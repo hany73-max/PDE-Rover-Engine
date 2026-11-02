@@ -22,24 +22,24 @@ In this project, we explore a different approach: using **Laplace's equation** â
 This project bridges the classical analytical methods taught in our semester syllabus with applied computational physics:
 
 1. **Analytical Solution of Laplace's Equation (Syllabus Section 1.4, Page 33):**
-   In our lecture notes, higher-order linear PDEs with constant coefficients are solved using the auxiliary operator (D_x, D_y)z = 0$. For Laplace's equation:
-   (D_x^2 + D_y^2)z = 0
-   Setting  = m$ and  = 1$ yields the **auxiliary equation**:
-   m^2 + 1 = 0 \implies m = \pm i
+   In our lecture notes, higher-order linear PDEs with constant coefficients are solved using the differential operator $F(D_x, D_y)z = 0$. For Laplace's equation:
+   $$(D_x^2 + D_y^2)z = 0$$
+   Setting $D_x = m$ and $D_y = 1$ yields the **auxiliary equation**:
+   $$m^2 + 1 = 0 \implies m = \pm i$$
    Because the roots are complex conjugates, the exact general solution is:
-   z(x, y) = \phi_1(y + ix) + \phi_2(y - ix)
-   This proves that any harmonic potential field is the superposition of analytic functions of the complex variable  + iy$.
+   $$z(x, y) = \phi_1(y + ix) + \phi_2(y - ix)$$
+   This proves that any harmonic potential field is the superposition of analytic functions of the complex variable $x + iy$.
 
 2. **Streamlines and Lagrange's Method (Syllabus Section 1.3.1):**
-   A rover following the potential gradient moves along streamlines defined by the quasi-linear transport equation  \frac{\partial \phi}{\partial x} + v \frac{\partial \phi}{\partial y} = 0$. By Lagrange's auxiliary equations:
-   \frac{dx}{u} = \frac{dy}{v}
+   A rover following the potential gradient moves along streamlines defined by the quasi-linear transport equation $u \frac{\partial \phi}{\partial x} + v \frac{\partial \phi}{\partial y} = 0$. By Lagrange's auxiliary equations:
+   $$\frac{dx}{u} = \frac{dy}{v}$$
    Integrating this system yields the exact physical trajectory curves traversed by the rover.
 
 3. **Wavefront Propagation & Charpit's Method (Syllabus Section 1.3.2 & 1.3.6):**
-   The minimum travel-time wavefront satisfies the Eikonal equation $|\nabla \phi|^2 = p^2 + q^2 = 1$. In our lecture notes, this is classified as non-linear **Form 1 ((p, q) = 0$)**, solved analytically via Charpit's auxiliary system to obtain complete integrals of the form  = ax \pm \sqrt{1 - a^2}y + c$.
+   The minimum travel-time wavefront satisfies the Eikonal equation $|\nabla \phi|^2 = p^2 + q^2 = 1$. In our lecture notes, this is classified as non-linear **Form 1 ($f(p, q) = 0$)**, solved analytically via Charpit's auxiliary system to obtain complete integrals of the form $z = ax \pm \sqrt{1 - a^2}y + c$.
 
 4. **The Scale-Up Dilemma (Why Numerical Relaxation is Necessary):**
-   While the analytical formula  = \phi_1(y + ix) + \phi_2(y - ix)$ holds on smooth theoretical domains, a real Mars digital elevation model contains over 10,000 irregular crater boundaries with no-flux Neumann insulation ($\partial\phi/\partial n = 0$). Because no single closed-form formula can satisfy 10,000 irregular boundary constraints, we discretize the continuous differential operator $ into the 5-point discrete Laplacian stencil.
+   While the analytical formula $z = \phi_1(y + ix) + \phi_2(y - ix)$ holds on smooth theoretical domains, a real Mars digital elevation model contains over 10,000 irregular crater boundaries with no-flux Neumann insulation ($\partial\phi/\partial n = 0$). Because no single closed-form formula can satisfy 10,000 irregular boundary constraints, we discretize the continuous differential operator $(D_x^2 + D_y^2)$ into the 5-point discrete Laplacian stencil.
 
 ### 2.1 What is Laplace's Equation?
 

@@ -19,4 +19,8 @@ venv/
 outputs/*
 !outputs/.gitkeep
 
+# Jupyter Notebook checkpoints
+.ipynb_checkpoints/
+*/.ipynb_checkpoints/*
+
 # Note: data/ is tracked so team members have the Mars DEM files out of the box

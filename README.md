@@ -42,34 +42,56 @@ In traditional video-game or robotics navigation (APF), a rover is like a marble
 
 ---
 
-## 🎓 Student Starter Kit & Team Workflow
+## 🎓 Student Starter Kit: The DeepLearning.AI Lab Suite
 
-This repository bridges **college PDE coursework (analytical methods)** with **planetary robotics (computational physics)**:
+This repository features a 6-part interactive, guided Jupyter Notebook lab series formatted in the signature style of **DeepLearning.AI / Stanford CME (Andrew Ng)**:
 
-1. **Step 1 (Pencil & Paper Lab):** Complete [STUDENT_WORKSHEET.md](STUDENT_WORKSHEET.md) to master hand-calculations on the 4-node discrete Laplacian, Lagrange streamline ODEs, and operator auxiliary roots.
-2. **Step 2 (Coursework Tutor):** Run python -m course_math.tutor to review step-by-step derivations for any textbook exercise in Chapters 1 & 2.
-3. **Step 3 (The Mars Scale-Up):** Run python test_solvers.py and python main.py to see your paper math scale up to 25,600 nodes on real NASA Mars HiRISE terrain!
+| Lab | Topic | Paper & Pencil Exercise | Rover Engineering Application |
+|---|---|---|---|
+| **[Lab 1](labs/Lab_1_Elimination_of_Constants.ipynb)** | Elimination of Arbitrary Constants | $z = ax + by + \sqrt{a^2+b^2}$ | Rover Sensor Calibration & Wavefront Invariant |
+| **[Lab 2](labs/Lab_2_Lagrange_Method.ipynb)** | 1st-Order Linear PDEs (Lagrange) | $x^2 p + y^2 q = z^2$ | Rover Solar Wind Drift Field & Characteristic Streamlines |
+| **[Lab 3](labs/Lab_3_Nonlinear_Charpit.ipynb)** | 1st-Order Non-Linear PDEs (Charpit) | $p^2 + q^2 = 4z$ | Eikonal Optical Sensor Wavefront & Slopes |
+| **[Lab 4](labs/Lab_4_HigherOrder_Operators.ipynb)** | Higher-Order Homogeneous Linear PDEs | $(D^2 - 4D'^2)z = 0$ | Rover Heat Shield Thermal Gradient $(D - 2D')(D + 2D')z = 0$ |
+| **[Lab 5](labs/Lab_5_NonHomogeneous_PDEs.ipynb)** | Non-Homogeneous Linear PDEs | $(D - D' - 1)(D + 2D' - 2)z = 0$ | Dual-Source Rover Radio Communication Beacon Field |
+| **[Lab 6](labs/Lab_6_Mars_Rover_Capstone.ipynb)** | **Grand Capstone: Mars Rover Navigation** | 5-Point Laplacian Stencil Derivation | 25,600-Node HiRISE Mars Terrain Path Planning |
+
+👉 **Stuck on paper math?** Check out the complete step-by-step master derivation guide: **[INSTRUCTOR_ANSWER_KEY.md](INSTRUCTOR_ANSWER_KEY.md)**!
+
+### Each Lab Follows the 6-Stage DeepLearning.AI Methodology:
+1. **The Mission Narrative & Deep "WHY":** Real-world Mars rover mission problem & physical intuition.
+2. **Rosetta Stone Translation:** Blackboard Math $\longleftrightarrow$ Plain English $\longleftrightarrow$ Python Code.
+3. **Step-by-Step Textbook Worked Example:** Clear walk-through of the analytical method.
+4. **Paper-and-Pencil Challenge:** Work out the analytical solution by hand before coding.
+5. **Coding Cell with Graded Unit Tests:** Complete functions between `### START CODE HERE ###` and get instant `[PASS] All tests passed!` feedback.
+6. **Dynamic Visualization:** Interactive 2D contour and 3D surface plots showing physical meaning.
 
 ---
 
 ## Project Structure
 
-`
+```
 Rover-Path-Finder/
 │
+├── labs/                       ← 🌟 DEEPLEARNING.AI 6-LAB COURSE SUITE
+│   ├── Lab_1_Elimination_of_Constants.ipynb
+│   ├── Lab_2_Lagrange_Method.ipynb
+│   ├── Lab_3_Nonlinear_Charpit.ipynb
+│   ├── Lab_4_HigherOrder_Operators.ipynb
+│   ├── Lab_5_NonHomogeneous_PDEs.ipynb
+│   ├── Lab_6_Mars_Rover_Capstone.ipynb
+│   └── tests/                  ← Automated test harness for each lab
+│       ├── test_lab1.py ... test_lab6.py
+│
+├── INSTRUCTOR_ANSWER_KEY.md    ← 🔑 Complete step-by-step master solutions for all paper problems
 ├── TEAM_GUIDE.md               ← 📘 Complete course guide & syllabus roadmap
-├── STUDENT_WORKSHEET.md        ← 📝 Pencil-and-paper lab worksheet for teammates
+├── STUDENT_WORKSHEET.md        ← 📝 Companion pencil-and-paper lab worksheet
 ├── test_solvers.py             ← 🧪 Fast unit test bench for iterative solvers
 ├── main.py                     ← 🚀 Full benchmark & report figure generator
 ├── plan_on_heightmap.py        ← CLI: plan a route on any height map (.img/.tif/.png/…)
 ├── run_all.ps1                 ← reproduces all real-DEM runs end-to-end
 │
-├── course_math/                ← 📚 Semester analytical PDE solver package
-│   ├── elimination.py          ← Sec 1.2: PDE derivation by eliminating constants
-│   ├── first_order.py          ← Sec 1.3: Lagrange, Forms 1-4, Charpit's method
-│   ├── higher_order.py         ← Sec 1.4: Auxiliary equation (C.F.) & P.I. short methods
-│   ├── non_homogeneous.py     ← Sec 2.1: Reducible & irreducible operator factoring
-│   └── tutor.py                ← Interactive CLI tutor for students
+├── scripts/                    ← 🛠️ Build and generation utilities
+│   └── generate_all_labs.py    ← Batch lab generator script
 │
 ├── rover_path_finder/          ← 🛰️ Planetary rover simulation package
 │   ├── solvers.py              ← Discrete Jacobi, Gauss-Seidel, SOR & Neumann solvers
