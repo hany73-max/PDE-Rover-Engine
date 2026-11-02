@@ -59,6 +59,21 @@ This repository features a 6-part interactive, guided Jupyter Notebook lab serie
 
 👉 **Stuck on paper math?** Check out the complete step-by-step master derivation guide: **[INSTRUCTOR_ANSWER_KEY.md](INSTRUCTOR_ANSWER_KEY.md)**!
 
+---
+
+### 🌍 اللابات باللغة العربية (Arabic DeepLearning.AI Lab Suite)
+
+إذا كنت تفضل دراسة اللابات التفاعلية وحل التمارين باللغة العربية (مع الحفاظ التام على الرموز الرياضية والأكواد البرمجية):
+
+| اللاب (بالعربية) | موضوع المنهج الأكاديمي | التشغيل المباشر في Colab | الملف المحلي | التطبيق في مركبة المريخ |
+|---|---|:---:|:---:|---|
+| **اللاب 1** | تكوين المعادلات بحذف الثوابت | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/hany73-max/PDE-Rover-Engine/blob/main/labs_ar/Lab_1_Elimination_of_Constants_AR.ipynb) | [`Lab_1_AR.ipynb`](labs_ar/Lab_1_Elimination_of_Constants_AR.ipynb) | فحص أمان ميول التضاريس لحوض الهبوط |
+| **اللاب 2** | طريقة لاجرانج لخطوط الانسياب | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/hany73-max/PDE-Rover-Engine/blob/main/labs_ar/Lab_2_Lagrange_Method_AR.ipynb) | [`Lab_2_AR.ipynb`](labs_ar/Lab_2_Lagrange_Method_AR.ipynb) | مسار خطوط انسياب العجلات في الرمال |
+| **اللاب 3** | طريقة شاربيت وموجات الرادار | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/hany73-max/PDE-Rover-Engine/blob/main/labs_ar/Lab_3_Nonlinear_Charpit_AR.ipynb) | [`Lab_3_AR.ipynb`](labs_ar/Lab_3_Nonlinear_Charpit_AR.ipynb) | خريطة مسافات الرادار البصري Eikonal |
+| **اللاب 4** | مؤثرات الرتب العليا ومعادلة لابل | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/hany73-max/PDE-Rover-Engine/blob/main/labs_ar/Lab_4_HigherOrder_Operators_AR.ipynb) | [`Lab_4_AR.ipynb`](labs_ar/Lab_4_HigherOrder_Operators_AR.ipynb) | أصل معادلة لابل المستمرة بدون حفر فخ |
+| **اللاب 5** | المؤثرات غير المتجانسة والتخميد | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/hany73-max/PDE-Rover-Engine/blob/main/labs_ar/Lab_5_NonHomogeneous_PDEs_AR.ipynb) | [`Lab_5_AR.ipynb`](labs_ar/Lab_5_NonHomogeneous_PDEs_AR.ipynb) | تلاشي إشارة البث واستهلاك البطارية |
+| **اللاب 6** | **المشروع النهائي: ملاحة المريخ** | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/hany73-max/PDE-Rover-Engine/blob/main/labs_ar/Lab_6_Mars_Rover_Capstone_AR.ipynb) | [`Lab_6_AR.ipynb`](labs_ar/Lab_6_Mars_Rover_Capstone_AR.ipynb) | الملاحة الذاتية على 25,600 نقطة تضاريس |
+
 ### Each Lab Follows the 6-Stage DeepLearning.AI Methodology:
 1. **The Mission Narrative & Deep "WHY":** Real-world Mars rover mission problem & physical intuition.
 2. **Rosetta Stone Translation:** Blackboard Math $\longleftrightarrow$ Plain English $\longleftrightarrow$ Python Code.
