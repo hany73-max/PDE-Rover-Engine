@@ -259,3 +259,24 @@ $$\omega_{\text{opt}} = \frac{2}{1 + \sin\left(\frac{\pi}{N}\right)}$$
 * For $N = 16$: $\omega_{\text{opt}} = \frac{2}{1 + \sin(\pi / 16)} = \frac{2}{1 + 0.19509} \approx 1.6735$
 * For $N = 160$: $\omega_{\text{opt}} = \frac{2}{1 + \sin(\pi / 160)} = \frac{2}{1 + 0.01963} \approx 1.9615$
 
+
+---
+
+### 📝 Challenge 6.3: The Physics & Math Bridge (APF vs. Laplace)
+**Question:** Why does classical Artificial Potential Field (APF) fail inside Martian craters, and how does Laplace's equation guarantee the rover will never get trapped?
+
+**Step-by-Step Rationale:**
+1. **Classical APF Equation:**
+   $$U(\mathbf{x}) = U_{\text{att}}(\mathbf{x}) + U_{\text{rep}}(\mathbf{x})$$
+   * At a point inside a U-shaped dead end facing the goal behind a wall, the attractive forward force $\mathbf{F}_{\text{att}} = -\nabla U_{\text{att}}$ is exactly equal and opposite to the repulsive obstacle force $\mathbf{F}_{\text{rep}} = -\nabla U_{\text{rep}}$.
+   * Result: $\mathbf{F}_{\text{net}} = -\nabla U = \mathbf{0}$. The forces cancel out, creating an **artificial local minimum (pothole)** where the rover freezes permanently.
+
+2. **The Laplace PDE Replacement:**
+   $$\nabla^2 \phi = \frac{\partial^2 \phi}{\partial x^2} + \frac{\partial^2 \phi}{\partial y^2} = 0$$
+   * **Dirichlet Boundary Conditions:** Start fixed at high pressure $\phi = 1.0$; Goal fixed at low pressure $\phi = 0.0$.
+   * **Neumann Boundary Conditions:** Obstacle crater walls fixed as insulated zero-flux boundaries $\frac{\partial \phi}{\partial n} = 0$.
+
+3. **The Mathematical Guarantee (The Strong Maximum Principle):**
+   * By the Maximum Principle for harmonic functions (proved in Chapter 1.4 of the syllabus), a function satisfying $\nabla^2 \phi = 0$ **cannot have local maxima or minima in the interior of the domain**.
+   * Extrema exist **strictly on the boundaries** ($\{1.0, 0.0\}$).
+   * Therefore, the gradient $-\nabla\phi$ never vanishes in navigable space. The rover follows the characteristic streamline $\frac{dx}{u} = \frac{dy}{v}$ (Lagrange's method from Chapter 1.3) with a **100% mathematical guarantee of reaching the goal without trapping**.
