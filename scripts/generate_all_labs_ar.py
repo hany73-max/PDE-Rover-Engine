@@ -40,14 +40,18 @@ def _protect_inline_segments(line: str, in_table: bool = False) -> str:
 
     # 2. Extract inline `...` code spans second so ** or _ inside code are untouched
     def _save_code(m: re.Match) -> str:
+        raw_code = m.group(1)
+        has_arabic = bool(re.search(r"[\u0600-\u06FF]", raw_code))
         code_txt = (
-            m.group(1)
-            .replace("&", "&amp;")
+            raw_code.replace("&", "&amp;")
             .replace("<", "&lt;")
             .replace(">", "&gt;")
+            .replace("*", "&#42;")
+            .replace("_", "&#95;")
         )
+        c_dir = "rtl" if has_arabic else "ltr"
         html = (
-            f'{RLM}<code dir="ltr" style="direction:ltr; display:inline-block; '
+            f'{RLM}<code dir="{c_dir}" style="direction:{c_dir}; display:inline-block; '
             f'unicode-bidi:isolate; padding:1px 5px; border-radius:3px;">{code_txt}</code>{RLM}'
         )
         idx = len(code_store)
@@ -300,7 +304,9 @@ def _format_rtl_section(section_text: str) -> str:
     body = re.sub(r"\n{3,}", "\n\n", body)
     return (
         '<div dir="rtl" align="right" style="direction:rtl; text-align:right; unicode-bidi:embed; '
-        'line-height:1.85; padding:6px 10px 16px 10px;">\n\n'
+        'width:calc(100vw - 140px); max-width:calc(100vw - 140px); min-width:100%; box-sizing:border-box; '
+        'line-height:1.85; padding:6px 14px 16px 14px;">\n'
+        '<style>.markdown, .markdown-body, :host { max-width: 100% !important; width: 100% !important; }</style>\n\n'
         f"{body}\n\n</div>"
     )
 
