@@ -11,8 +11,298 @@ Generates:
 
 import json
 import os
+import re
 
 os.makedirs("labs_ar", exist_ok=True)
+
+RLM = "\u200f"  # Unicode Right-to-Left Mark
+LRM = "\u200e"  # Unicode Left-to-Right Mark
+
+
+def _protect_inline_segments(line: str, in_table: bool = False) -> str:
+    """Converts inline math, code, links, bold, and italics into Colab-safe RTL/LTR HTML."""
+    math_store: list[str] = []
+    code_store: list[str] = []
+
+    # 1. Extract inline $...$ math first so *, _, [] inside LaTeX are untouched
+    def _save_math(m: re.Match) -> str:
+        expr = m.group(1).strip().replace(r"\|", r"\Vert ")
+        nowrap = " white-space:nowrap;" if in_table else ""
+        html = (
+            f'{RLM}<span dir="ltr" style="direction:ltr; display:inline-block; '
+            f'unicode-bidi:isolate;{nowrap}">${{{expr}}}$</span>{RLM}'
+        )
+        idx = len(math_store)
+        math_store.append(html)
+        return f"\x00MATH{idx}\x00"
+
+    line = re.sub(r"(?<!\$)\$(?!\$)(.+?)(?<!\$)\$(?!\$)", _save_math, line)
+
+    # 2. Extract inline `...` code spans second so ** or _ inside code are untouched
+    def _save_code(m: re.Match) -> str:
+        code_txt = (
+            m.group(1)
+            .replace("&", "&amp;")
+            .replace("<", "&lt;")
+            .replace(">", "&gt;")
+        )
+        html = (
+            f'{RLM}<code dir="ltr" style="direction:ltr; display:inline-block; '
+            f'unicode-bidi:isolate; padding:1px 5px; border-radius:3px;">{code_txt}</code>{RLM}'
+        )
+        idx = len(code_store)
+        code_store.append(html)
+        return f"\x00CODE{idx}\x00"
+
+    line = re.sub(r"`([^`]+)`", _save_code, line)
+
+    # 3. Convert Markdown links [label](url) -> <a href="url">label</a>
+    line = re.sub(r"\[([^\]]+)\]\(([^)]+)\)", r'<a href="\2">\1</a>', line)
+
+    # 4. Convert **bold** -> <b>bold</b> and *italic* -> <i>italic</i>
+    line = re.sub(r"\*\*(.+?)\*\*", r"<b>\1</b>", line)
+    line = re.sub(r"(?<!\*)\*(?!\*)(.+?)(?<!\*)\*(?!\*)", r"<i>\1</i>", line)
+
+    # 5. Restore code and math placeholders
+    for idx, html in enumerate(code_store):
+        line = line.replace(f"\x00CODE{idx}\x00", html)
+    for idx, html in enumerate(math_store):
+        line = line.replace(f"\x00MATH{idx}\x00", html)
+
+    return line
+
+
+def _render_rtl_table(table_lines: list[str]) -> str:
+    """Converts a Markdown table into a Colab-proof 100%-width RTL HTML table."""
+    rows = []
+    for raw in table_lines:
+        s = raw.strip()
+        if s.startswith("|"):
+            s = s[1:]
+        if s.endswith("|"):
+            s = s[:-1]
+        cells = [c.strip() for c in re.split(r"(?<!\\)\|", s)]
+        rows.append(cells)
+
+    if len(rows) < 2:
+        return "\n".join(table_lines)
+
+    header = rows[0]
+    body_start = 2 if all(re.match(r"^:?-{2,}:?$", c.replace(" ", "")) for c in rows[1]) else 1
+    body = rows[body_start:]
+
+    out = [
+        '<div dir="rtl" style="direction:rtl; text-align:right; overflow-x:auto; width:100%; margin:14px 0;">',
+        '<table dir="rtl" style="display:table; width:100%; border-collapse:collapse; direction:rtl; text-align:right;">',
+        "<thead>",
+        "<tr>",
+    ]
+    for h in header:
+        h_clean = _protect_inline_segments(h, in_table=True)
+        out.append(
+            '<th dir="rtl" align="right" style="direction:rtl; text-align:right; padding:9px 12px; '
+            'border:1px solid rgba(128,128,128,0.4); background-color:rgba(128,128,128,0.16); '
+            'font-weight:bold; line-height:1.75; vertical-align:middle;">\n\n'
+            f"{RLM}{h_clean}\n\n</th>"
+        )
+    out.extend(["</tr>", "</thead>", "<tbody>"])
+
+    for r in body:
+        out.append("<tr>")
+        for c in r:
+            c_clean = _protect_inline_segments(c, in_table=True)
+            out.append(
+                '<td dir="rtl" align="right" style="direction:rtl; text-align:right; padding:8px 12px; '
+                'border:1px solid rgba(128,128,128,0.35); vertical-align:middle; line-height:1.8;">\n\n'
+                f"{RLM}{c_clean}\n\n</td>"
+            )
+        out.append("</tr>")
+
+    out.extend(["</tbody>", "</table>", "</div>"])
+    return "\n".join(out)
+
+
+def _format_rtl_section(section_text: str) -> str:
+    """Formats a single Arabic Markdown section so Google Colab renders RTL text, lists, and math cleanly."""
+    lines = section_text.strip().split("\n")
+    out_blocks: list[str] = []
+    i = 0
+    n = len(lines)
+
+    while i < n:
+        line = lines[i]
+        stripped = line.strip()
+
+        # 1. Blank line
+        if not stripped:
+            out_blocks.append("")
+            i += 1
+            continue
+
+        # 2. Code fence ``` ... ```
+        if stripped.startswith("```"):
+            fence_lines = []
+            i += 1
+            while i < n and not lines[i].strip().startswith("```"):
+                fence_lines.append(lines[i])
+                i += 1
+            if i < n:
+                i += 1
+            code_body = (
+                "\n".join(fence_lines)
+                .replace("&", "&amp;")
+                .replace("<", "&lt;")
+                .replace(">", "&gt;")
+            )
+            out_blocks.append(
+                '\n<div dir="rtl" align="right" style="direction:rtl; text-align:right; '
+                'background-color:rgba(128,128,128,0.12); padding:10px 14px; border-radius:6px; '
+                'overflow-x:auto; margin:10px 0; font-family:monospace; white-space:pre;">'
+                f"{RLM}{code_body}</div>\n"
+            )
+            continue
+
+        # 3. Single-line or multi-line display math $$ ... $$
+        if stripped.startswith("$$"):
+            if stripped.endswith("$$") and len(stripped) > 4:
+                math_content = stripped
+                i += 1
+            else:
+                math_lines = [stripped]
+                i += 1
+                while i < n:
+                    math_lines.append(lines[i].strip())
+                    if lines[i].strip().endswith("$$"):
+                        i += 1
+                        break
+                    i += 1
+                math_content = "\n".join(math_lines)
+            out_blocks.append(
+                '\n<div dir="ltr" align="center" style="direction:ltr; text-align:center; margin:12px 0; overflow-x:auto;">\n\n'
+                f"{math_content}\n\n</div>\n"
+            )
+            continue
+
+        # 4. Markdown Table (consecutive lines starting with |)
+        if stripped.startswith("|") and stripped.endswith("|"):
+            table_lines = []
+            while i < n and lines[i].strip().startswith("|") and lines[i].strip().endswith("|"):
+                table_lines.append(lines[i])
+                i += 1
+            out_blocks.append("\n" + _render_rtl_table(table_lines) + "\n")
+            continue
+
+        # 5. Blockquote (> ...)
+        if stripped.startswith(">"):
+            bq_lines = []
+            while i < n and lines[i].strip().startswith(">"):
+                content = re.sub(r"^>\s?", "", lines[i].strip())
+                bq_lines.append(f"{RLM}{_protect_inline_segments(content)}")
+                i += 1
+            bq_body = "<br>\n".join(bq_lines)
+            out_blocks.append(
+                '\n<div dir="rtl" align="right" style="direction:rtl; text-align:right; unicode-bidi:embed; '
+                'border-right:4px solid #f59e0b; background-color:rgba(245,158,11,0.08); '
+                'padding:10px 14px; margin:12px 0; border-radius:4px; line-height:1.85;">\n\n'
+                f"{bq_body}\n\n</div>\n"
+            )
+            continue
+
+        # 6. HTML tags like <details>, </details>, <summary>...</summary>
+        if stripped.startswith("<details"):
+            out_blocks.append(
+                '\n<details dir="rtl" style="direction:rtl; text-align:right; margin:8px 0; padding:6px 10px;">\n'
+            )
+            i += 1
+            continue
+        if stripped.startswith("<summary>"):
+            inner = stripped[len("<summary>") : -len("</summary>")] if stripped.endswith("</summary>") else stripped[9:]
+            inner = _protect_inline_segments(inner)
+            out_blocks.append(
+                f'<summary dir="rtl" style="direction:rtl; text-align:right; cursor:pointer; font-weight:bold;">\n\n{RLM}{inner}\n\n</summary>\n'
+            )
+            i += 1
+            continue
+        if stripped.startswith("</details>"):
+            out_blocks.append("\n</details>\n")
+            i += 1
+            continue
+
+        # 7. Bullet list item (* ... or - ...)
+        m_bullet = re.match(r"^(\s*)[\*\-]\s+(.*)$", line)
+        if m_bullet:
+            indent_len = len(m_bullet.group(1))
+            content = _protect_inline_segments(m_bullet.group(2).strip())
+            pad_right = 34 if indent_len >= 2 else 14
+            marker = "▪" if indent_len >= 2 else "•"
+            out_blocks.append(
+                f'\n<div dir="rtl" align="right" style="direction:rtl; text-align:right; unicode-bidi:embed; '
+                f'margin:5px 0; padding-right:{pad_right}px; line-height:1.85;">\n\n'
+                f"{RLM}{marker} {content}\n\n</div>\n"
+            )
+            i += 1
+            continue
+
+        # 8. Numbered list item (1. ...)
+        m_num = re.match(r"^(\s*)(\d+)\.\s+(.*)$", line)
+        if m_num:
+            indent_len = len(m_num.group(1))
+            num_str = m_num.group(2)
+            content = _protect_inline_segments(m_num.group(3).strip())
+            pad_right = 26 if indent_len >= 2 else 8
+            out_blocks.append(
+                f'\n<div dir="rtl" align="right" style="direction:rtl; text-align:right; unicode-bidi:embed; '
+                f'margin:7px 0; padding-right:{pad_right}px; line-height:1.85;">\n\n'
+                f"{RLM}<b>{num_str}.</b> {content}\n\n</div>\n"
+            )
+            i += 1
+            continue
+
+        # 9. Markdown Heading (#, ##, ###, ####)
+        m_head = re.match(r"^(#{1,6})\s+(.*)$", stripped)
+        if m_head:
+            hashes = m_head.group(1)
+            title = _protect_inline_segments(m_head.group(2).strip())
+            out_blocks.append(
+                f'\n<div dir="rtl" align="right" style="direction:rtl; text-align:right; unicode-bidi:embed; margin:12px 0 6px 0;">\n\n'
+                f"{hashes} {RLM}{title}\n\n</div>\n"
+            )
+            i += 1
+            continue
+
+        # 10. Regular paragraph line (check if inline $$...$$ appears inside the line)
+        if "$$" in stripped:
+            parts = re.split(r"(\$\$.+?\$\$)", stripped)
+            for p in parts:
+                p_s = p.strip()
+                if not p_s:
+                    continue
+                if p_s.startswith("$$") and p_s.endswith("$$"):
+                    out_blocks.append(
+                        '\n<div dir="ltr" align="center" style="direction:ltr; text-align:center; margin:12px 0; overflow-x:auto;">\n\n'
+                        f"{p_s}\n\n</div>\n"
+                    )
+                else:
+                    out_blocks.append(
+                        '\n<div dir="rtl" align="right" style="direction:rtl; text-align:right; unicode-bidi:embed; margin:6px 0; line-height:1.85;">\n\n'
+                        f"{RLM}{_protect_inline_segments(p_s)}\n\n</div>\n"
+                    )
+            i += 1
+            continue
+
+        out_blocks.append(
+            '\n<div dir="rtl" align="right" style="direction:rtl; text-align:right; unicode-bidi:embed; margin:6px 0; line-height:1.85;">\n\n'
+            f"{RLM}{_protect_inline_segments(stripped)}\n\n</div>\n"
+        )
+        i += 1
+
+    body = "\n".join(out_blocks).strip()
+    body = re.sub(r"\n{3,}", "\n\n", body)
+    return (
+        '<div dir="rtl" align="right" style="direction:rtl; text-align:right; unicode-bidi:embed; '
+        'line-height:1.85; padding:6px 10px 16px 10px;">\n\n'
+        f"{body}\n\n</div>"
+    )
 
 
 class ArabicNotebookBuilder:
@@ -36,6 +326,9 @@ class ArabicNotebookBuilder:
             "        if not os.path.exists('PDE-Rover-Engine'):\n"
             "            import subprocess\n"
             "            subprocess.run(['git', 'clone', 'https://github.com/hany73-max/PDE-Rover-Engine.git'], check=True)\n"
+            "        else:\n"
+            "            import subprocess\n"
+            "            subprocess.run(['git', '-C', 'PDE-Rover-Engine', 'pull', '--ff-only'], check=False)\n"
             "        os.chdir('PDE-Rover-Engine')\n"
             "        if '.' not in sys.path:\n"
             "            sys.path.insert(0, '.')\n"
@@ -47,13 +340,27 @@ class ArabicNotebookBuilder:
 
     def md(self, source: str, rtl: bool = True):
         text = source.strip()
-        if rtl and not text.startswith("<div dir="):
-            text = f'<div dir="rtl" style="text-align:right">\n\n{text}\n\n</div>'
-        self.cells.append({
-            "cell_type": "markdown",
-            "metadata": {},
-            "source": [line + "\n" for line in text.split("\n")]
-        })
+        if not rtl:
+            self.cells.append({
+                "cell_type": "markdown",
+                "metadata": {},
+                "source": [line + "\n" for line in text.split("\n")]
+            })
+            return
+
+        # Remove leading/trailing --- and split multi-part sections on \n---\n
+        # so Google Colab never clips giant multi-section cells
+        text = re.sub(r"^\s*---\s*\n", "", text)
+        text = re.sub(r"\n\s*---\s*$", "", text)
+        sections = [s.strip() for s in re.split(r"\n\s*---\s*\n", text) if s.strip()]
+
+        for sec in sections:
+            formatted = _format_rtl_section(sec)
+            self.cells.append({
+                "cell_type": "markdown",
+                "metadata": {},
+                "source": [line + "\n" for line in formatted.split("\n")]
+            })
 
     def code(self, source: str):
         self.cells.append({
@@ -152,10 +459,10 @@ $$p = \frac{\partial z}{\partial x}, \qquad q = \frac{\partial z}{\partial y}, \
 كيف تفرق بين الأنواع الأربعة لمعادلات الرتبة الأولى $f(x, y, z, p, q) = 0$ بمجرد النظر؟
 
 | النوع في المذكرة (PDF ص 5–6) | الصورة العامة | الشرط المميز في خطوة واحدة | أمثلة المذكرة (PDF ص 5–6) |
-| :--- | :--- | :--- | :--- |
-| **1. خطية تماماً (Linear)** | $P(x,y)p + Q(x,y)q = R(x,y)z + S(x,y)$ | $p, q$ **و كذلك $z$** كلها من الدرجة الأولى، ولا يوجد ضرب بينها ($zp$ ممنوع!) | $yx^2 p + xy^2 q = xyz + x^2 y^3$ |
-| **2. نصف خطية (Semi-linear)** | $P(x,y)p + Q(x,y)q = R(x,y,z)$ | $p, q$ من الدرجة الأولى، ومعاملاتهما $P(x,y), Q(x,y)$ **تعتمد على $x, y$ فقط** (خالية من $z$)، بينما الطرف الأيمن $R$ قد يكون غير خطي في $z$ | $xyp + x^2 y q = x^2 y^2 z^2$ |
-| **3. شبه خطية (Quasi-linear)** | $P(x,y,z)p + Q(x,y,z)q = R(x,y,z)$ | $p, q$ من الدرجة الأولى، ولكن معاملاتهما $P, Q$ **تحتوي على $z$** (هذه المعادلة وما سبقها تُحل جميعاً **بطريقة لاجرانج** في اللاب 2!) | $x^2 z p + y^2 z q = xy$ |
+| ---: | ---: | ---: | ---: |
+| **1. خطية تماماً (Linear)** | $P(x,y)p + Q(x,y)q = R(x,y)z + S(x,y)$ | المشتقتان $p, q$ **وكذلك $z$** كلها من الدرجة الأولى، ولا يوجد ضرب بينها ($zp$ ممنوع!) | $yx^2 p + xy^2 q = xyz + x^2 y^3$ |
+| **2. نصف خطية (Semi-linear)** | $P(x,y)p + Q(x,y)q = R(x,y,z)$ | المشتقتان $p, q$ من الدرجة الأولى، ومعاملاتهما $P(x,y), Q(x,y)$ **تعتمد على $x, y$ فقط** (خالية من $z$)، بينما الطرف الأيمن $R$ قد يكون غير خطي في $z$ | $xyp + x^2 y q = x^2 y^2 z^2$ |
+| **3. شبه خطية (Quasi-linear)** | $P(x,y,z)p + Q(x,y,z)q = R(x,y,z)$ | المشتقتان $p, q$ من الدرجة الأولى، ولكن معاملاتهما $P, Q$ **تحتوي على $z$** (هذه المعادلة وما سبقها تُحل جميعاً **بطريقة لاجرانج** في اللاب 2!) | $x^2 z p + y^2 z q = xy$ |
 | **4. غير خطية (Non-linear)** | $f(x,y,z,p,q) = 0$ | تحتوي على تربيع $p^2, q^2$ أو حاصل ضرب $p \cdot q$ (وتُحل **بطريقة شاربت والأشكال الأربعة** في اللاب 3!) | $p^2 + q^2 = 1$ أو $pq = z$ |
 
 ---
