@@ -316,7 +316,7 @@ def downsample(h: np.ndarray, max_size: int) -> tuple[np.ndarray, int]:
     return h[:r, :c].reshape(r // f, f, c // f, f).mean(axis=(1, 3)), f
 
 
-def slope_map(h: np.ndarray, cell: float) -> np.ndarray:
+def slope_map(h: np.ndarray, cell: float = 1.0) -> np.ndarray:
     """Per-cell slope in degrees.
 
     Parameters

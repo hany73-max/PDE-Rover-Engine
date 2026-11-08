@@ -1,6 +1,6 @@
 # Rover Path Finder
 
-> 🌍 **دليل الاستخدام الكامل باللغة العربية:** تجدون الشرح المفصل للمشروع واللابات الستة وطريقة التشغيل باللغة العربية مع الحفاظ التام على المصطلحات الرياضية هنا: **[TEAM_GUIDE_AR.md](TEAM_GUIDE_AR.md)** | ورقة الأسئلة الورقية: **[STUDENT_WORKSHEET_AR.md](STUDENT_WORKSHEET_AR.md)**
+> 🌍 **دليل الاستخدام الكامل باللغة العربية:** تجدون الشرح المفصل للمشروع والمعامل الستة وطريقة التشغيل باللغة العربية مع الحفاظ التام على المصطلحات الرياضية هنا: **[TEAM_GUIDE_AR.md](TEAM_GUIDE_AR.md)** | ورقة الأسئلة الورقية: **[STUDENT_WORKSHEET_AR.md](STUDENT_WORKSHEET_AR.md)** | قاموس المصطلحات (عربي–إنجليزي): **[GLOSSARY_AR.md](GLOSSARY_AR.md)**
 
 > Safe planetary rover path planning using **Laplace's equation** — implemented from scratch with NumPy only. No SciPy, no graph libraries, no ML.
 
@@ -48,31 +48,31 @@ In traditional video-game or robotics navigation (APF), a rover is like a marble
 
 This repository features a 6-part interactive, guided Jupyter Notebook lab series formatted in the signature style of **DeepLearning.AI / Stanford CME (Andrew Ng)**:
 
-| Lab | Topic | One-Click Cloud | Local File | Rover Engineering Application |
+| Lab | Topic & Lecture Notes Reference | One-Click Cloud | Local File | `rover_path_finder/` Connection |
 |---|---|:---:|:---:|---|
-| **Lab 1** | Elimination of Constants | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/hany73-max/PDE-Rover-Engine/blob/main/labs/Lab_1_Elimination_of_Constants.ipynb) | [`Lab_1.ipynb`](labs/Lab_1_Elimination_of_Constants.ipynb) | Rover Sensor Calibration & Wavefront Invariant |
-| **Lab 2** | 1st-Order Linear PDEs (Lagrange) | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/hany73-max/PDE-Rover-Engine/blob/main/labs/Lab_2_Lagrange_Method.ipynb) | [`Lab_2.ipynb`](labs/Lab_2_Lagrange_Method.ipynb) | Rover Solar Wind Drift Field & Characteristic Streamlines |
-| **Lab 3** | 1st-Order Non-Linear PDEs (Charpit) | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/hany73-max/PDE-Rover-Engine/blob/main/labs/Lab_3_Nonlinear_Charpit.ipynb) | [`Lab_3.ipynb`](labs/Lab_3_Nonlinear_Charpit.ipynb) | Eikonal Optical Sensor Wavefront & Slopes |
-| **Lab 4** | Higher-Order Homogeneous Linear PDEs | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/hany73-max/PDE-Rover-Engine/blob/main/labs/Lab_4_HigherOrder_Operators.ipynb) | [`Lab_4.ipynb`](labs/Lab_4_HigherOrder_Operators.ipynb) | Rover Heat Shield Thermal Gradient $(D - 2D')(D + 2D')z = 0$ |
-| **Lab 5** | Non-Homogeneous Linear PDEs | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/hany73-max/PDE-Rover-Engine/blob/main/labs/Lab_5_NonHomogeneous_PDEs.ipynb) | [`Lab_5.ipynb`](labs/Lab_5_NonHomogeneous_PDEs.ipynb) | Dual-Source Rover Radio Communication Beacon Field |
-| **Lab 6** | **Grand Capstone: Mars Rover Navigation** | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/hany73-max/PDE-Rover-Engine/blob/main/labs/Lab_6_Mars_Rover_Capstone.ipynb) | [`Lab_6.ipynb`](labs/Lab_6_Mars_Rover_Capstone.ipynb) | 25,600-Node HiRISE Mars Terrain Path Planning |
+| **Lab 1** | Elimination of Constants (Ch. 1, Sec. 1.1–1.2, PDF pp. 2–11) | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/hany73-max/PDE-Rover-Engine/blob/main/labs/Lab_1_Elimination_of_Constants.ipynb) | [`Lab_1.ipynb`](labs/Lab_1_Elimination_of_Constants.ipynb) | [`terrain.slope_map`](rover_path_finder/terrain.py) — Terrain gradients $(p, q)$ & steep-slope hazard detection |
+| **Lab 2** | 1st-Order Quasi-Linear PDEs: Lagrange (Sec. 1.3.1, PDF pp. 12–17) | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/hany73-max/PDE-Rover-Engine/blob/main/labs/Lab_2_Lagrange_Method.ipynb) | [`Lab_2.ipynb`](labs/Lab_2_Lagrange_Method.ipynb) | [`planners.descend`](rover_path_finder/planners.py) — Tracing characteristic streamlines $\frac{dx}{u}=\frac{dy}{v}$ to the goal |
+| **Lab 3** | 1st-Order Non-Linear PDEs & Charpit (Sec. 1.3.2–1.3.6, PDF pp. 17–27) | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/hany73-max/PDE-Rover-Engine/blob/main/labs/Lab_3_Nonlinear_Charpit.ipynb) | [`Lab_3.ipynb`](labs/Lab_3_Nonlinear_Charpit.ipynb) | [`terrain.dilate`](rover_path_finder/terrain.py) — Eikonal wavefront $p^2+q^2=1$ & obstacle safety buffers |
+| **Lab 4** | Higher-Order Homogeneous Linear PDEs (Sec. 1.4, PDF pp. 28–51) | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/hany73-max/PDE-Rover-Engine/blob/main/labs/Lab_4_HigherOrder_Operators.ipynb) | [`Lab_4.ipynb`](labs/Lab_4_HigherOrder_Operators.ipynb) | [`solvers._avg`](rover_path_finder/solvers.py) — Laplace's equation $(D_x^2+D_y^2)\phi=0$ & 4-neighbor average |
+| **Lab 5** | Non-Homogeneous Reducible PDEs (Ch. 2, Sec. 2.1, PDF pp. 52–62) | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/hany73-max/PDE-Rover-Engine/blob/main/labs/Lab_5_NonHomogeneous_PDEs.ipynb) | [`Lab_5.ipynb`](labs/Lab_5_NonHomogeneous_PDEs.ipynb) | [`planners.dirichlet_potential`](rover_path_finder/planners.py) vs [`neumann_potential`](rover_path_finder/planners.py) — Narrow-corridor exponential decay $e^{-(\pi/W)x}$ |
+| **Lab 6** | **Grand Capstone: Mars Rover Navigation** | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/hany73-max/PDE-Rover-Engine/blob/main/labs/Lab_6_Mars_Rover_Capstone.ipynb) | [`Lab_6.ipynb`](labs/Lab_6_Mars_Rover_Capstone.ipynb) | [`solvers.sor_neumann`](rover_path_finder/solvers.py) — Discrete Maximum Principle proof, Red-Black SOR & U-Trap escape |
 
 👉 **Stuck on paper math?** Check out the complete step-by-step master derivation guide: **[INSTRUCTOR_ANSWER_KEY.md](INSTRUCTOR_ANSWER_KEY.md)**!
 
 ---
 
-### 🌍 اللابات باللغة العربية (Arabic DeepLearning.AI Lab Suite)
+### 🌍 المعامل التفاعلية باللغة العربية (Arabic DeepLearning.AI Lab Suite)
 
-إذا كنت تفضل دراسة اللابات التفاعلية وحل التمارين باللغة العربية (مع الحفاظ التام على الرموز الرياضية والأكواد البرمجية):
+إذا كنت تفضل دراسة المعامل التفاعلية وحل التمارين باللغة العربية (مع الحفاظ التام على الرموز الرياضية والأكواد البرمجية وربطها المباشر بصفحات المحاضرات):
 
-| اللاب (بالعربية) | موضوع المنهج الأكاديمي | التشغيل المباشر في Colab | الملف المحلي | التطبيق في مركبة المريخ |
+| المعمل (بالعربية) | موضوع المنهج الأكاديمي (مع رقم الصفحة بالـ PDF) | التشغيل المباشر في Colab | الملف المحلي | الدالة البرمجية في `rover_path_finder/` |
 |---|---|:---:|:---:|---|
-| **اللاب 1** | تكوين المعادلات بحذف الثوابت | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/hany73-max/PDE-Rover-Engine/blob/main/labs_ar/Lab_1_Elimination_of_Constants_AR.ipynb) | [`Lab_1_AR.ipynb`](labs_ar/Lab_1_Elimination_of_Constants_AR.ipynb) | فحص أمان ميول التضاريس لحوض الهبوط |
-| **اللاب 2** | طريقة لاجرانج لخطوط الانسياب | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/hany73-max/PDE-Rover-Engine/blob/main/labs_ar/Lab_2_Lagrange_Method_AR.ipynb) | [`Lab_2_AR.ipynb`](labs_ar/Lab_2_Lagrange_Method_AR.ipynb) | مسار خطوط انسياب العجلات في الرمال |
-| **اللاب 3** | طريقة شاربيت وموجات الرادار | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/hany73-max/PDE-Rover-Engine/blob/main/labs_ar/Lab_3_Nonlinear_Charpit_AR.ipynb) | [`Lab_3_AR.ipynb`](labs_ar/Lab_3_Nonlinear_Charpit_AR.ipynb) | خريطة مسافات الرادار البصري Eikonal |
-| **اللاب 4** | مؤثرات الرتب العليا ومعادلة لابل | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/hany73-max/PDE-Rover-Engine/blob/main/labs_ar/Lab_4_HigherOrder_Operators_AR.ipynb) | [`Lab_4_AR.ipynb`](labs_ar/Lab_4_HigherOrder_Operators_AR.ipynb) | أصل معادلة لابل المستمرة بدون حفر فخ |
-| **اللاب 5** | المؤثرات غير المتجانسة والتخميد | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/hany73-max/PDE-Rover-Engine/blob/main/labs_ar/Lab_5_NonHomogeneous_PDEs_AR.ipynb) | [`Lab_5_AR.ipynb`](labs_ar/Lab_5_NonHomogeneous_PDEs_AR.ipynb) | تلاشي إشارة البث واستهلاك البطارية |
-| **اللاب 6** | **المشروع النهائي: ملاحة المريخ** | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/hany73-max/PDE-Rover-Engine/blob/main/labs_ar/Lab_6_Mars_Rover_Capstone_AR.ipynb) | [`Lab_6_AR.ipynb`](labs_ar/Lab_6_Mars_Rover_Capstone_AR.ipynb) | الملاحة الذاتية على 25,600 نقطة تضاريس |
+| **المعمل 1** | تكوين المعادلات بحذف الثوابت (PDF ص 2–11) | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/hany73-max/PDE-Rover-Engine/blob/main/labs_ar/Lab_1_Elimination_of_Constants_AR.ipynb) | [`Lab_1_AR.ipynb`](labs_ar/Lab_1_Elimination_of_Constants_AR.ipynb) | [`terrain.slope_map`](rover_path_finder/terrain.py) — حساب ميل التضاريس $\|\nabla z\|$ واكتشاف الصخور الخطرة |
+| **المعمل 2** | طريقة لاجرانج لخطوط الانسياب (PDF ص 12–17) | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/hany73-max/PDE-Rover-Engine/blob/main/labs_ar/Lab_2_Lagrange_Method_AR.ipynb) | [`Lab_2_AR.ipynb`](labs_ar/Lab_2_Lagrange_Method_AR.ipynb) | [`planners.descend`](rover_path_finder/planners.py) — تتبع خطوط الانسياب (Streamlines) نحو الهدف |
+| **المعمل 3** | المعادلات غير الخطية وطريقة شاربت (PDF ص 17–27) | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/hany73-max/PDE-Rover-Engine/blob/main/labs_ar/Lab_3_Nonlinear_Charpit_AR.ipynb) | [`Lab_3_AR.ipynb`](labs_ar/Lab_3_Nonlinear_Charpit_AR.ipynb) | [`terrain.dilate`](rover_path_finder/terrain.py) — معادلة الإيكونال $p^2+q^2=1$ وتوسيع نطاق الأمان |
+| **المعمل 4** | مؤثرات الرتب العليا ومعادلة لابلاس (PDF ص 28–51) | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/hany73-max/PDE-Rover-Engine/blob/main/labs_ar/Lab_4_HigherOrder_Operators_AR.ipynb) | [`Lab_4_AR.ipynb`](labs_ar/Lab_4_HigherOrder_Operators_AR.ipynb) | [`solvers._avg`](rover_path_finder/solvers.py) — معادلة لابلاس $(D_x^2+D_y^2)\phi=0$ ومتوسط الجيران الأربعة |
+| **المعمل 5** | المؤثرات القابلة للتحليل والتخميد الأسي (PDF ص 52–62) | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/hany73-max/PDE-Rover-Engine/blob/main/labs_ar/Lab_5_NonHomogeneous_PDEs_AR.ipynb) | [`Lab_5_AR.ipynb`](labs_ar/Lab_5_NonHomogeneous_PDEs_AR.ipynb) | [`planners.dirichlet_potential`](rover_path_finder/planners.py) ضد [`neumann_potential`](rover_path_finder/planners.py) — تلاشي الجهد في الممرات الضيقة |
+| **المعمل 6** | **المشروع النهائي: ملاحة المريخ الشاملة** | [![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)](https://colab.research.google.com/github/hany73-max/PDE-Rover-Engine/blob/main/labs_ar/Lab_6_Mars_Rover_Capstone_AR.ipynb) | [`Lab_6_AR.ipynb`](labs_ar/Lab_6_Mars_Rover_Capstone_AR.ipynb) | [`solvers.sor_neumann`](rover_path_finder/solvers.py) — إثبات مبدأ القيمة العظمى، تسريع SOR، والهروب من فخ حرف U |
 
 ### Each Lab Follows the 6-Stage DeepLearning.AI Methodology:
 1. **The Mission Narrative & Deep "WHY":** Real-world Mars rover mission problem & physical intuition.
@@ -89,20 +89,18 @@ This repository features a 6-part interactive, guided Jupyter Notebook lab serie
 ```
 Rover-Path-Finder/
 │
-├── labs/                       ← 🌟 DEEPLEARNING.AI 6-LAB COURSE SUITE
-│   ├── Lab_1_Elimination_of_Constants.ipynb
-│   ├── Lab_2_Lagrange_Method.ipynb
-│   ├── Lab_3_Nonlinear_Charpit.ipynb
-│   ├── Lab_4_HigherOrder_Operators.ipynb
-│   ├── Lab_5_NonHomogeneous_PDEs.ipynb
-│   ├── Lab_6_Mars_Rover_Capstone.ipynb
-│   └── tests/                  ← Automated test harness for each lab
-│       ├── test_lab1.py ... test_lab6.py
+├── labs/                       ← 🌟 DEEPLEARNING.AI 6-LAB COURSE SUITE (English)
+│   ├── Lab_1_Elimination_of_Constants.ipynb ... Lab_6_Mars_Rover_Capstone.ipynb
+│   └── tests/                  ← Numerical auto-grader test harness (test_lab1.py ... test_lab6.py)
 │
+├── labs_ar/                    ← 🌍 DEEPLEARNING.AI 6-LAB COURSE SUITE (Arabic / باللغة العربية)
+│   └── Lab_1_Elimination_of_Constants_AR.ipynb ... Lab_6_Mars_Rover_Capstone_AR.ipynb
+│
+├── GLOSSARY_AR.md              ← 📖 Bilingual Arabic–English PDE & Rover Codebase Glossary
 ├── INSTRUCTOR_ANSWER_KEY.md    ← 🔑 Complete step-by-step master solutions for all paper problems
-├── TEAM_GUIDE.md               ← 📘 Complete course guide & syllabus roadmap
+├── TEAM_GUIDE.md               ← 📘 Complete course guide & syllabus roadmap (English)
 ├── TEAM_GUIDE_AR.md            ← 🌍 Complete course & project guide in Arabic (باللغة العربية)
-├── STUDENT_WORKSHEET.md        ← 📝 Companion pencil-and-paper lab worksheet
+├── STUDENT_WORKSHEET.md        ← 📝 Companion pencil-and-paper lab worksheet (English)
 ├── STUDENT_WORKSHEET_AR.md     ← 📝 Companion worksheet in Arabic (ورقة التمارين بالعربية)
 ├── test_solvers.py             ← 🧪 Fast unit test bench for iterative solvers
 ├── main.py                     ← 🚀 Full benchmark & report figure generator
@@ -110,7 +108,8 @@ Rover-Path-Finder/
 ├── run_all.ps1                 ← reproduces all real-DEM runs end-to-end
 │
 ├── scripts/                    ← 🛠️ Build and generation utilities
-│   └── generate_all_labs.py    ← Batch lab generator script
+│   ├── generate_all_labs.py    ← Batch English lab generator script
+│   └── generate_all_labs_ar.py ← Batch Arabic lab generator script
 │
 ├── rover_path_finder/          ← 🛰️ Planetary rover simulation package
 │   ├── solvers.py              ← Discrete Jacobi, Gauss-Seidel, SOR & Neumann solvers
@@ -119,7 +118,8 @@ Rover-Path-Finder/
 │   └── visualization.py       ← all Matplotlib figures
 │
 ├── solutions/                  ← 🔑 Reference implementation backup
-│   ├── labs/                   ← Pre-solved instructor reference notebooks
+│   ├── labs/                   ← Pre-solved English reference notebooks
+│   ├── labs_ar/                ← Pre-solved Arabic reference notebooks
 │   └── solvers_reference.py    ← Reference discrete solver backup
 │
 ├── data/                       ← Real Mars HiRISE DEM data files (.IMG)

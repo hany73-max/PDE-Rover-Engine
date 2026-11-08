@@ -122,6 +122,7 @@ def nearest_free(
 def dirichlet_potential(
     hazard: np.ndarray,
     goal: tuple[int, int],
+    tol: float = 1e-11,
 ) -> tuple[np.ndarray, int, float]:
     """Formulation A: hazards held at φ = 1, target at φ = 0 (Dirichlet).
 
@@ -135,15 +136,15 @@ def dirichlet_potential(
     iters : number of SOR iterations
     secs  : wall-clock time
     """
-    n = hazard.shape[0]
-    phi = np.full((n, n), 0.5)
+    n, m = hazard.shape
+    phi = np.full((n, m), 0.5)
     fixed = hazard.copy()
     phi[hazard] = 1.0
     gx, gy = goal
     phi[gy, gx] = 0.0
     fixed[gy, gx] = True
     t0 = time.time()
-    phi, hist = sor(phi, fixed, omega_opt(n), tol=1e-11)
+    phi, hist = sor(phi, fixed, omega_opt(n), tol=tol)
     return phi, len(hist), time.time() - t0
 
 
@@ -151,6 +152,7 @@ def neumann_potential(
     hazard: np.ndarray,
     start: tuple[int, int],
     goal: tuple[int, int],
+    tol: float = 1e-10,
 ) -> tuple[np.ndarray, int, float]:
     """Formulation B: no-flux walls, start = source (φ = 1), target = sink (φ = 0).
 
@@ -173,7 +175,7 @@ def neumann_potential(
     phi[goal[1], goal[0]] = 0.0
     fixed[goal[1], goal[0]] = True
     t0 = time.time()
-    phi, hist = sor_neumann(phi, fixed, free, omega_opt(n) * 0.97, tol=1e-10)
+    phi, hist = sor_neumann(phi, fixed, free, omega_opt(n) * 0.97, tol=tol)
     return phi, len(hist), time.time() - t0
 
 

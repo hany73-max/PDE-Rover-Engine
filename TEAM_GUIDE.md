@@ -32,28 +32,36 @@ flowchart TD
 
 Before turning to computers, every engineer must understand the **analytical methods** used to solve PDEs on paper.
 
-### 1. Eliminating Arbitrary Constants (Section 1.2)
+### 1. Eliminating Arbitrary Constants (Ch. 1, Sec. 1.2 — Notes pp. 1–10 / PDF pp. 2–11)
 Given a geometric family of surfaces $F(x, y, z, a, b) = 0$, we eliminate the arbitrary parameters $a$ and $b$ by computing:
 $$p = \frac{\partial z}{\partial x}, \quad q = \frac{\partial z}{\partial y}$$
-* **Example (Page 8-9):** $z = ax + by + a^2 + b^2 \implies z = xp + yq + p^2 + q^2$.
+* **Worked Example 1 (Notes p. 8 / PDF pp. 9–10):** $z = ax + by + a^2 + b^2$ (2-parameter family of planes) $\implies z = xp + yq + p^2 + q^2$.
+* **Worked Example 2 (Notes p. 9 / PDF p. 10):** $z = (x - a)^2 + (y - b)^2 \implies p^2 + q^2 = 4z$.
+* **The Rover Connection:** [`terrain.slope_map`](rover_path_finder/terrain.py) computes $p$ and $q$ across the DEM to flag steep craters via $\|\nabla z\| = \sqrt{p^2 + q^2}$.
 
-### 2. First-Order Quasi-Linear PDEs: Lagrange's Method (Section 1.3.1)
+### 2. First-Order Quasi-Linear PDEs: Lagrange's Method (Ch. 1, Sec. 1.3.1 — Notes pp. 11–16 / PDF pp. 12–17)
 Any first-order equation linear in partial derivatives $P p + Q q = R$ is solved by finding two independent integrals $u(x, y, z) = c_1$ and $v(x, y, z) = c_2$ from the **auxiliary equations**:
 $$\frac{dx}{P} = \frac{dy}{Q} = \frac{dz}{R}$$
-* **The Rover Connection:** In rover navigation, the streamline trajectories of motion along velocity field $(u, v)$ follow $\frac{dx}{u} = \frac{dy}{v}$.
+* **The Rover Connection:** [`planners.descend`](rover_path_finder/planners.py) integrates the characteristic streamline $\frac{dx}{u} = \frac{dy}{v}$ along $(u, v) = -\nabla\phi$.
 
-### 3. Special Non-Linear Forms & Charpit's Method (Section 1.3.2–1.3.6)
-* **Form 1 ($f(p, q) = 0$):** $p = a, q = b \implies z = ax + by + c$.  
-  *Crucial Example:* The Eikonal travel-time equation in robotics $|\nabla \phi|^2 = p^2 + q^2 = 1$ is standard Form 1!
-* **Clairaut's Form ($z = px + qy + f(p, q)$):** Complete integral $z = ax + by + f(a, b)$.
-* **Charpit's Method:** Universal auxiliary ODE system for solving any non-linear 1st-order PDE.
+### 3. Special Non-Linear Forms & Charpit's Method (Ch. 1, Sec. 1.3.2–1.3.6 — Notes pp. 16–26 / PDF pp. 17–27)
+* **Standard Form I ($f(p, q) = 0$, Notes p. 18 / PDF p. 19):** $p = a, q = b \implies z = ax + by + c$.  
+  *Crucial Example:* The Eikonal wavefront equation $\|\nabla z\|^2 = p^2 + q^2 = 1$ is Standard Form I, whose singular envelope $x^2 + y^2 = z^2$ governs the circular safety buffer in [`terrain.dilate`](rover_path_finder/terrain.py)!
+* **Clairaut's Form ($z = px + qy + f(p, q)$, Notes p. 19 / PDF p. 20):** Complete integral $z = ax + by + f(a, b)$.
+* **Charpit's General Method (Notes pp. 24–26 / PDF pp. 25–27):**
+  $$\frac{dx}{-f_p} = \frac{dy}{-f_q} = \frac{dz}{-p f_p - q f_q} = \frac{dp}{f_x + p f_z} = \frac{dq}{f_y + q f_z}$$
 
-### 4. Higher-Order Homogeneous Linear PDEs (Section 1.4)
+### 4. Higher-Order Homogeneous Linear PDEs (Ch. 1, Sec. 1.4 — Notes pp. 34–57 / PDF pp. 28–51)
 For differential operator $F(D_x, D_y)z = 0$, put $D_x = m, D_y = 1$ to form the **Auxiliary Equation (A.E.)** $F(m, 1) = 0$:
-* **Laplace's Equation (Page 33, Example 5):**
+* **Laplace's Equation (Notes p. 39 / PDF p. 33, Example 5):**
   $$(D_x^2 + D_y^2)z = 0 \implies m^2 + 1 = 0 \implies m = \pm i$$
-  General Solution: $z = \phi_1(y + ix) + \phi_2(y - ix)$.
-* **Particular Integrals (P.I.):** Short methods for exponential forcing ($e^{ax+by}$), sinusoidal forcing ($\sin(ax+by)$), and polynomial forcing ($x^a y^b$).
+  General Solution: $z = \phi_1(y + ix) + \phi_2(y - ix)$, discretized via [`solvers._avg`](rover_path_finder/solvers.py).
+* **Particular Integrals (P.I.):** Shortcut rules for exponential forcing ($e^{ax+by}$) and sinusoidal forcing ($\sin(ax+by)$, Notes p. 48 / PDF p. 42, Example 4).
+
+### 5. Non-Homogeneous Reducible Linear PDEs (Ch. 2, Sec. 2.1 — Notes Ch. 2 pp. 1–10 / PDF pp. 52–62)
+When a differential operator factors into linear terms $(a D_x + b D_y + c)z = 0$ containing a 0th-order constant $c \neq 0$, Case (A) (Notes Ch. 2 p. 2 / PDF p. 54) yields:
+$$z(x, y) = e^{-\frac{c}{a}x}\phi(a y - b x)$$
+* **The Rover Connection:** Explains why [`planners.dirichlet_potential`](rover_path_finder/planners.py) suffers from exponential gradient decay $e^{-(\pi/W)x}$ inside narrow passages of width $W$, whereas [`planners.neumann_potential`](rover_path_finder/planners.py) preserves a strong linear gradient!
 
 ---
 
@@ -248,13 +256,13 @@ When you run the project, your team will see:
 ## 🛠️ Module 7: Hands-On Laboratory Guide (How to Learn & Execute)
 
 ### Step 1: Work Through the 6 Interactive DeepLearning.AI Labs
-Launch the modular laboratory series in [`labs/`](labs/):
-* **[Lab 1: Elimination of Constants](labs/Lab_1_Elimination_of_Constants.ipynb)** — Sensor wavefront calibration.
-* **[Lab 2: Lagrange's Method](labs/Lab_2_Lagrange_Method.ipynb)** — Characteristic curves and solar wind drift.
-* **[Lab 3: Non-Linear Charpit](labs/Lab_3_Nonlinear_Charpit.ipynb)** — Eikonal optical sensor wavefront propagation.
-* **[Lab 4: Higher-Order Operators](labs/Lab_4_HigherOrder_Operators.ipynb)** — Thermal gradient and Laplace characteristic roots.
-* **[Lab 5: Non-Homogeneous PDEs](labs/Lab_5_NonHomogeneous_PDEs.ipynb)** — Reducible operators and exponential signal attenuation.
-* **[Lab 6: Mars Rover Capstone](labs/Lab_6_Mars_Rover_Capstone.ipynb)** — 25,600-node planetary navigation on real HiRISE DEMs.
+Launch the modular laboratory series in [`labs/`](labs/) (or in Arabic in [`labs_ar/`](labs_ar/)):
+* **[Lab 1: Elimination of Constants](labs/Lab_1_Elimination_of_Constants.ipynb)** — Terrain slope gradients $(p, q)$ & hazard detection (`terrain.slope_map`).
+* **[Lab 2: Lagrange's Method](labs/Lab_2_Lagrange_Method.ipynb)** — Characteristic curves & steepest-descent path tracing (`planners.descend`).
+* **[Lab 3: Non-Linear Charpit](labs/Lab_3_Nonlinear_Charpit.ipynb)** — Eikonal wavefront propagation $p^2+q^2=1$ & obstacle safety buffers (`terrain.dilate`).
+* **[Lab 4: Higher-Order Operators](labs/Lab_4_HigherOrder_Operators.ipynb)** — Laplace's equation $(D_x^2+D_y^2)\phi=0$, complex characteristic roots, and the 4-neighbor average (`solvers._avg`).
+* **[Lab 5: Non-Homogeneous PDEs](labs/Lab_5_NonHomogeneous_PDEs.ipynb)** — Reducible operators and narrow-corridor exponential decay (`dirichlet_potential` vs `neumann_potential`).
+* **[Lab 6: Mars Rover Capstone](labs/Lab_6_Mars_Rover_Capstone.ipynb)** — Discrete Maximum Principle proof, Red-Black SOR (`solvers.sor_neumann`), and escaping the U-shaped box canyon.
 
 *(Use [`STUDENT_WORKSHEET.md`](STUDENT_WORKSHEET.md) for your team's pencil-and-paper scratch calculations, and [`INSTRUCTOR_ANSWER_KEY.md`](INSTRUCTOR_ANSWER_KEY.md) for complete master derivations!)*
 
