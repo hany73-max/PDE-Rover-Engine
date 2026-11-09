@@ -327,8 +327,7 @@ class ArabicNotebookBuilder:
 
     def colab_setup(self):
         source = (
-            "# 🚀 تهيئة بيئة Google Colab\n"
-            "# إذا كنت تشغل هذا النوت بوك على Google Colab، شغل هذه الخلية لتحميل ملفات المستودع والاختبارات تلقائياً:\n"
+            "# 🚀 تهيئة مسار المشروع تلقائياً (يعمل على JupyterLab المحلي، وBinder، وGoogle Colab)\n"
             "import os, sys\n"
             "try:\n"
             "    if 'google.colab' in str(get_ipython()):\n"
@@ -339,11 +338,18 @@ class ArabicNotebookBuilder:
             "            import subprocess\n"
             "            subprocess.run(['git', '-C', 'PDE-Rover-Engine', 'pull', '--ff-only'], check=False)\n"
             "        os.chdir('PDE-Rover-Engine')\n"
-            "        if '.' not in sys.path:\n"
-            "            sys.path.insert(0, '.')\n"
-            "        print('[OK] تم تجهيز بيئة Google Colab بنجاح والاتصال بمستودع المشروع!')\n"
             "except NameError:\n"
-            "    pass"
+            "    pass\n"
+            "\n"
+            "# التأكد من إضافة المجلد الرئيسي للمشروع (الذي يحتوي على labs/ و rover_path_finder/) إلى مسار بايثون\n"
+            "# سواء تم تشغيل النوت بوك من المجلد الرئيسي أو من داخل labs_ar/ أو solutions/labs_ar/\n"
+            "_cwd = os.path.abspath(os.getcwd())\n"
+            "for _candidate in [_cwd, os.path.abspath(os.path.join(_cwd, '..')), os.path.abspath(os.path.join(_cwd, '..', '..'))]:\n"
+            "    if os.path.isdir(os.path.join(_candidate, 'labs', 'tests')) and os.path.isdir(os.path.join(_candidate, 'rover_path_finder')):\n"
+            "        if _candidate not in sys.path:\n"
+            "            sys.path.insert(0, _candidate)\n"
+            "        break\n"
+            "print('[OK] تم تهيئة مسار المشروع بنجاح!')"
         )
         self.code(source)
 
@@ -372,12 +378,22 @@ class ArabicNotebookBuilder:
             })
 
     def code(self, source: str):
+        text = source.strip()
+        if "from labs.tests import test_lab" in text and "_candidate" not in text:
+            guard = (
+                "import os, sys\n"
+                "for _p in ['.', '..', '../..']:\n"
+                "    _ap = os.path.abspath(_p)\n"
+                "    if os.path.isdir(os.path.join(_ap, 'labs', 'tests')) and _ap not in sys.path:\n"
+                "        sys.path.insert(0, _ap)\n"
+            )
+            text = guard + text
         self.cells.append({
             "cell_type": "code",
             "execution_count": None,
             "metadata": {},
             "outputs": [],
-            "source": [line + "\n" for line in source.strip().split("\n")]
+            "source": [line + "\n" for line in text.split("\n")]
         })
 
     def save(self):

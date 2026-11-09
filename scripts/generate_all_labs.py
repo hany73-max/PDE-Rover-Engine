@@ -32,20 +32,29 @@ class NotebookBuilder:
 
     def colab_setup(self):
         source = (
-            "# 🚀 GOOGLE COLAB SETUP\n"
-            "# If you are running this notebook on Google Colab, execute this cell to clone the repo and set paths:\n"
+            "# 🚀 ENVIRONMENT & PATH SETUP (Works in local JupyterLab, MyBinder, VS Code, and Google Colab)\n"
             "import os, sys\n"
             "try:\n"
             "    if 'google.colab' in str(get_ipython()):\n"
             "        if not os.path.exists('PDE-Rover-Engine'):\n"
             "            import subprocess\n"
             "            subprocess.run(['git', 'clone', 'https://github.com/hany73-max/PDE-Rover-Engine.git'], check=True)\n"
+            "        else:\n"
+            "            import subprocess\n"
+            "            subprocess.run(['git', '-C', 'PDE-Rover-Engine', 'pull', '--ff-only'], check=False)\n"
             "        os.chdir('PDE-Rover-Engine')\n"
-            "        if '.' not in sys.path:\n"
-            "            sys.path.insert(0, '.')\n"
-            "        print('[OK] Google Colab setup complete! Connected to PDE-Rover-Engine repository.')\n"
             "except NameError:\n"
-            "    pass"
+            "    pass\n"
+            "\n"
+            "# Automatically locate the repository root (containing labs/ and rover_path_finder/)\n"
+            "# regardless of whether JupyterLab sets cwd to the repo root, labs/, or solutions/labs/:\n"
+            "_cwd = os.path.abspath(os.getcwd())\n"
+            "for _candidate in [_cwd, os.path.abspath(os.path.join(_cwd, '..')), os.path.abspath(os.path.join(_cwd, '..', '..'))]:\n"
+            "    if os.path.isdir(os.path.join(_candidate, 'labs', 'tests')) and os.path.isdir(os.path.join(_candidate, 'rover_path_finder')):\n"
+            "        if _candidate not in sys.path:\n"
+            "            sys.path.insert(0, _candidate)\n"
+            "        break\n"
+            "print('[OK] Project root added to sys.path!')"
         )
         self.code(source)
 
@@ -57,12 +66,22 @@ class NotebookBuilder:
         })
 
     def code(self, source: str):
+        text = source.strip()
+        if "from labs.tests import test_lab" in text and "_candidate" not in text:
+            guard = (
+                "import os, sys\n"
+                "for _p in ['.', '..', '../..']:\n"
+                "    _ap = os.path.abspath(_p)\n"
+                "    if os.path.isdir(os.path.join(_ap, 'labs', 'tests')) and _ap not in sys.path:\n"
+                "        sys.path.insert(0, _ap)\n"
+            )
+            text = guard + text
         self.cells.append({
             "cell_type": "code",
             "execution_count": None,
             "metadata": {},
             "outputs": [],
-            "source": [line + "\n" for line in source.strip().split("\n")]
+            "source": [line + "\n" for line in text.split("\n")]
         })
 
     def save(self):
