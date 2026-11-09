@@ -304,9 +304,8 @@ def _format_rtl_section(section_text: str) -> str:
     body = re.sub(r"\n{3,}", "\n\n", body)
     return (
         '<div dir="rtl" align="right" style="direction:rtl; text-align:right; unicode-bidi:embed; '
-        'width:calc(100vw - 140px); max-width:calc(100vw - 140px); min-width:100%; box-sizing:border-box; '
-        'line-height:1.85; padding:6px 14px 16px 14px;">\n'
-        '<style>.markdown, .markdown-body, :host { max-width: 100% !important; width: 100% !important; }</style>\n\n'
+        'width:100%; max-width:100%; box-sizing:border-box; '
+        'line-height:1.85; padding:6px 14px 16px 14px;">\n\n'
         f"{body}\n\n</div>"
     )
 
@@ -318,8 +317,12 @@ class ArabicNotebookBuilder:
         self.cells = []
 
     def colab_badge(self):
-        url = f"https://colab.research.google.com/github/hany73-max/PDE-Rover-Engine/blob/main/labs_ar/{self.filename}"
-        badge = f"[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)]({url})"
+        colab_url = f"https://colab.research.google.com/github/hany73-max/PDE-Rover-Engine/blob/main/labs_ar/{self.filename}"
+        binder_url = f"https://mybinder.org/v2/gh/hany73-max/PDE-Rover-Engine/main?urlpath=lab/tree/labs_ar/{self.filename}"
+        badge = (
+            f"[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)]({colab_url}) "
+            f"[![Launch JupyterLab](https://mybinder.org/badge_logo.svg)]({binder_url})"
+        )
         self.md(badge, rtl=False)
 
     def colab_setup(self):
@@ -415,7 +418,7 @@ def build_lab_1_ar(solutions: bool = False, target_dir: str = "labs_ar"):
 | :--- | :--- | :--- |
 | $z = h(x, y)$ | ارتفاع سطح الأرض (بالمتر) عند الإحداثيات $(x, y)$ | مصفوفة الارتفاعات `h` ثنائية الأبعاد |
 | $p = \frac{\partial z}{\partial x}, \quad q = \frac{\partial z}{\partial y}$ | ميل السطح باتجاه الشرق ($x$) وباتجاه الشمال ($y$) | `gy, gx = np.gradient(h, cell)` |
-| $\sqrt{p^2 + q^2}$ | مقدار الانحدار الكلي للسطح (ظل زاوية الميل $\tan\theta$) | `slope = np.degrees(np.arctan(np.hypot(gx, gy)))` |
+| $\sqrt{p^2 + q^2}$ | مقدار الانحدار الكلي للسطح (ظل زاوية الميل $\tan\theta$) | `np.hypot(gx, gy)` داخل `slope_map(h)` |
 | $F(x, y, z, a, b) = 0$ | عائلة أسطح (مثلاً حفر بمراكز مختلفة $a, b$) | `Z = (X - a)**2 + (Y - b)**2` |
 | $f(x, y, z, p, q) = 0$ | **المعادلة التفاضلية الجزئية (PDE):** قانون يربط الميل بالارتفاع بغض النظر عن قيمة $(a,b)$ | `residual = (P**2 + Q**2) - 4*Z` |
 

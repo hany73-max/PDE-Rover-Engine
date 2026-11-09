@@ -22,8 +22,12 @@ class NotebookBuilder:
         self.cells = []
 
     def colab_badge(self):
-        url = f"https://colab.research.google.com/github/hany73-max/PDE-Rover-Engine/blob/main/labs/{self.filename}"
-        badge = f"[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)]({url})"
+        colab_url = f"https://colab.research.google.com/github/hany73-max/PDE-Rover-Engine/blob/main/labs/{self.filename}"
+        binder_url = f"https://mybinder.org/v2/gh/hany73-max/PDE-Rover-Engine/main?urlpath=lab/tree/labs/{self.filename}"
+        badge = (
+            f"[![Open In Colab](https://colab.research.google.com/assets/colab-badge.svg)]({colab_url}) "
+            f"[![Launch JupyterLab](https://mybinder.org/badge_logo.svg)]({binder_url})"
+        )
         self.md(badge)
 
     def colab_setup(self):

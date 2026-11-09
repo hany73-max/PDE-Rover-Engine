@@ -3,7 +3,7 @@ name = "rover-path-finder"
 version = "0.1.0"
 description = "Safe lunar/Mars rover path planning using Laplace's equation — NumPy only."
 readme = "README.md"
-requires-python = ">=3.13"
+requires-python = ">=3.10"
 dependencies = [
     "numpy",
     "matplotlib",
